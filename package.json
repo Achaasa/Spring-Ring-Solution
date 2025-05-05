@@ -1,0 +1,67 @@
+{
+  "name": "Spring-Ring-Solution",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tsc",
+    "start": "node dist/src/index.js",
+    "dev": "nodemon src/index.ts",
+    "migrate": "npx prisma migrate dev --name init && pnpm extra:fields",
+    "generate": "npx prisma generate",
+    "extra:fields": "ts-node extractFields.ts",
+    "prepare": "husky"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express-rate-limit": "^6.0.2",
+    "@types/nodemailer": "^6.4.17",
+    "install": "^0.13.0",
+    "prisma": "5.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@loancrate/prisma-schema-parser": "^3.0.0",
+    "@prisma/client": "^6.7.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/morgan": "^1.9.9",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^22.15.2",
+    "axios": "^1.9.0",
+    "bcrypt": "^5.1.1",
+    "cloudinary": "^2.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "husky": "^9.1.7",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
+    "morgan": "^1.10.0",
+    "multer": "1.4.5-lts.2",
+    "nodemailer": "^6.10.1",
+    "nodemon": "^3.1.10",
+    "pnpm": "^10.9.0",
+    "prisma": "^6.6.0",
+    "prisma-erd-generator": "^2.0.4",
+    "ts-node": "^10.9.2",
+    "zod": "^3.24.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "@scarf/scarf",
+      "bcrypt",
+      "prisma",
+      "puppeteer"
+    ]
+  }
+}

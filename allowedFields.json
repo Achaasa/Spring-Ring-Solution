@@ -1,0 +1,146 @@
+[
+  {
+    "modelName": "Unnamed Model",
+    "fields": []
+  },
+  {
+    "modelName": "erd",
+    "fields": [
+      "provider",
+      "Unnamed Field"
+    ]
+  },
+  {
+    "modelName": "client",
+    "fields": [
+      "provider",
+      "output"
+    ]
+  },
+  {
+    "modelName": "db",
+    "fields": [
+      "provider",
+      "url"
+    ]
+  },
+  {
+    "modelName": "User",
+    "fields": [
+      "id",
+      "email",
+      "password",
+      "name",
+      "role",
+      "phoneNumber",
+      "Unnamed Field",
+      "Unnamed Field",
+      "Unnamed Field",
+      "Unnamed Field",
+      "Unnamed Field",
+      "createdAt",
+      "updatedAt",
+      "imageKey",
+      "imageUrl",
+      "status"
+    ]
+  },
+  {
+    "modelName": "Service",
+    "fields": [
+      "id",
+      "name",
+      "description",
+      "createdAt",
+      "updatedAt",
+      "type"
+    ]
+  },
+  {
+    "modelName": "Booking",
+    "fields": [
+      "id",
+      "userId",
+      "serviceId",
+      "Unnamed Field",
+      "adminId",
+      "status",
+      "createdAt",
+      "updatedAt",
+      "payment"
+    ]
+  },
+  {
+    "modelName": "Payment",
+    "fields": [
+      "id",
+      "bookingId",
+      "amount",
+      "status",
+      "paidAt"
+    ]
+  },
+  {
+    "modelName": "Feedback",
+    "fields": [
+      "id",
+      "userId",
+      "message",
+      "rating",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "modelName": "Notification",
+    "fields": [
+      "id",
+      "userId",
+      "title",
+      "message",
+      "isRead",
+      "type",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "modelName": "Role",
+    "fields": [
+      "USER",
+      "ADMIN"
+    ]
+  },
+  {
+    "modelName": "BookingStatus",
+    "fields": [
+      "PENDING",
+      "ACCEPTED",
+      "REJECTED"
+    ]
+  },
+  {
+    "modelName": "PaymentStatus",
+    "fields": [
+      "SUCCESS",
+      "FAILED",
+      "PENDING",
+      "REFUNDED"
+    ]
+  },
+  {
+    "modelName": "UserStatus",
+    "fields": [
+      "BANNED",
+      "DELETED",
+      "ACTIVE"
+    ]
+  },
+  {
+    "modelName": "ServiceType",
+    "fields": [
+      "SECURITY",
+      "CLEANING"
+    ]
+  }
+]
