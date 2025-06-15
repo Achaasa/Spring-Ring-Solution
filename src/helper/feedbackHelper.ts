@@ -1,12 +1,9 @@
 import prisma from "../utils/prisma";
 import HttpException from "../utils/http-error";
 import { HttpStatus } from "../utils/http-status";
-import {
-  feedbackSchema,
-  updateFeedbackSchema,
-} from "../zodSchema/feedbackSchema";
-import { formatPrismaError } from "../utils/formatPrisma";
 import { Feedback } from "@prisma/client";
+import { feedbackSchema } from "../zodSchema/feedbackSchema";
+import { formatPrismaError } from "../utils/formatPrisma";
 
 export const createFeedback = async (feedbackData: Feedback) => {
   try {
@@ -22,6 +19,7 @@ export const createFeedback = async (feedbackData: Feedback) => {
     const user = await prisma.user.findUnique({
       where: { id: feedbackData.userId },
     });
+
     if (!user) {
       throw new HttpException(HttpStatus.NOT_FOUND, "User not found");
     }
@@ -34,6 +32,9 @@ export const createFeedback = async (feedbackData: Feedback) => {
     });
     return newFeedback;
   } catch (error) {
+    if (error instanceof HttpException) {
+      throw error;
+    }
     throw formatPrismaError(error);
   }
 };
@@ -60,7 +61,7 @@ export const getFeedbackById = async (id: string) => {
       },
     });
     if (!feedback) {
-      throw new HttpException(HttpStatus.NOT_FOUND, "Feedback not found.");
+      throw new HttpException(HttpStatus.NOT_FOUND, "Feedback not found");
     }
     return feedback;
   } catch (error) {
@@ -73,7 +74,7 @@ export const updateFeedback = async (
   feedbackData: Partial<Feedback>,
 ) => {
   try {
-    const validateFeedback = updateFeedbackSchema.safeParse(feedbackData);
+    const validateFeedback = feedbackSchema.partial().safeParse(feedbackData);
     if (!validateFeedback.success) {
       const errors = validateFeedback.error.issues.map(
         ({ message, path }) => `${path}: ${message}`,
@@ -81,7 +82,9 @@ export const updateFeedback = async (
       throw new HttpException(HttpStatus.BAD_REQUEST, errors.join(". "));
     }
 
-    const findFeedback = await prisma.feedback.findUnique({ where: { id } });
+    const findFeedback = await prisma.feedback.findUnique({
+      where: { id },
+    });
     if (!findFeedback) {
       throw new HttpException(HttpStatus.NOT_FOUND, "Feedback not found");
     }
@@ -103,10 +106,11 @@ export const deleteFeedback = async (id: string) => {
   try {
     const findFeedback = await getFeedbackById(id);
     if (!findFeedback) {
-      throw new HttpException(HttpStatus.NOT_FOUND, "Feedback does not exist");
+      throw new HttpException(HttpStatus.NOT_FOUND, "Feedback not found");
     }
-
-    await prisma.feedback.delete({ where: { id } });
+    await prisma.feedback.delete({
+      where: { id },
+    });
   } catch (error) {
     throw formatPrismaError(error);
   }

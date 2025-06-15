@@ -1,9 +1,9 @@
 import prisma from "../utils/prisma";
+import { Booking } from "@prisma/client";
 import HttpException from "../utils/http-error";
 import { HttpStatus } from "../utils/http-status";
 import { bookingSchema, updateBookingSchema } from "../zodSchema/bookingSchema";
 import { formatPrismaError } from "../utils/formatPrisma";
-import { Booking } from "@prisma/client";
 
 export const createBooking = async (bookingData: Booking) => {
   try {
@@ -39,8 +39,12 @@ export const createBooking = async (bookingData: Booking) => {
         admin: true,
       },
     });
+
     return newBooking;
   } catch (error) {
+    if (error instanceof HttpException) {
+      throw error;
+    }
     throw formatPrismaError(error);
   }
 };
@@ -71,10 +75,13 @@ export const getBookingById = async (id: string) => {
       },
     });
     if (!booking) {
-      throw new HttpException(HttpStatus.NOT_FOUND, "Booking not found.");
+      throw new HttpException(HttpStatus.NOT_FOUND, "Booking not found");
     }
     return booking;
   } catch (error) {
+    if (error instanceof HttpException) {
+      throw error;
+    }
     throw formatPrismaError(error);
   }
 };
@@ -116,7 +123,7 @@ export const deleteBooking = async (id: string) => {
   try {
     const findBooking = await getBookingById(id);
     if (!findBooking) {
-      throw new HttpException(HttpStatus.NOT_FOUND, "Booking does not exist");
+      throw new HttpException(HttpStatus.NOT_FOUND, "Booking not found");
     }
 
     await prisma.booking.delete({ where: { id } });
@@ -127,32 +134,29 @@ export const deleteBooking = async (id: string) => {
 
 export const approveBooking = async (id: string, adminId: string) => {
   try {
+
     const booking = await prisma.booking.findUnique({
       where: { id },
-      include: {
-        user: true,
-        service: true,
-        admin: true,
-      },
     });
-
     if (!booking) {
       throw new HttpException(HttpStatus.NOT_FOUND, "Booking not found");
     }
+    if (!adminId) {
+  throw new HttpException(HttpStatus.BAD_REQUEST, "Admin ID is required");
+}
 
-    // Check if admin exists
     const admin = await prisma.user.findUnique({
       where: { id: adminId },
     });
     if (!admin || admin.role !== "ADMIN") {
-      throw new HttpException(HttpStatus.FORBIDDEN, "Invalid admin");
+      throw new HttpException(HttpStatus.BAD_REQUEST, "Invalid admin");
     }
 
     const updatedBooking = await prisma.booking.update({
       where: { id },
       data: {
         status: "ACCEPTED",
-        adminId: adminId,
+        adminId,
       },
       include: {
         user: true,
@@ -163,6 +167,9 @@ export const approveBooking = async (id: string, adminId: string) => {
 
     return updatedBooking;
   } catch (error) {
+    if (error instanceof HttpException) {
+      throw error;
+    }
     throw formatPrismaError(error);
   }
 };
@@ -181,7 +188,9 @@ export const rejectBooking = async (id: string, adminId: string) => {
     if (!booking) {
       throw new HttpException(HttpStatus.NOT_FOUND, "Booking not found");
     }
-
+if (!adminId) {
+  throw new HttpException(HttpStatus.BAD_REQUEST, "Admin ID is required");
+}
     // Check if admin exists
     const admin = await prisma.user.findUnique({
       where: { id: adminId },

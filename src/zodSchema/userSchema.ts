@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // Enum for user roles
-export const userRoleEnum = z.enum(["ADMIN", "SUPER_ADMIN"]);
+export const userRoleEnum = z.enum(["ADMIN", "USER"]);
 
 // Schema to create a new user
 export const userSchema = z.object({
@@ -21,9 +21,10 @@ export const userSchema = z.object({
 
   phoneNumber: z
     .string({ required_error: "Phone number is required" })
-    .min(1, { message: "Phone number can't be empty" }),
+    .min(1, { message: "Phone number can't be empty" })
+    .optional(),
 
-  role: userRoleEnum, // Admin or Staff
+  role: userRoleEnum.default("USER"),
 });
 
 // Schema for updating a user (all fields are optional)
@@ -50,7 +51,7 @@ export const updateUserSchema = z.object({
     .min(1, { message: "Phone number can't be empty" })
     .optional(),
 
-  role: userRoleEnum.optional(), // Admin or Staff
+  role: userRoleEnum.optional(),
 });
 
 // Types to infer the data structures

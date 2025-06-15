@@ -67,15 +67,9 @@ export const getUserById = async (id: string) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id },
-      include: {
-        bookings: true,
-        notifications: true,
-        feedbacks: true,
-        handledBookings: true,
-      },
     });
     if (!user) {
-      throw new HttpException(HttpStatus.NOT_FOUND, "User not found.");
+      throw new HttpException(HttpStatus.NOT_FOUND, "User not found");
     }
 
     return user;
@@ -88,12 +82,6 @@ export const getUserByEmail = async (email: string) => {
   try {
     const user = await prisma.user.findUnique({
       where: { email },
-      include: {
-        bookings: true,
-        notifications: true,
-        feedbacks: true,
-        handledBookings: true,
-      },
     });
     return user;
   } catch (error) {
@@ -105,7 +93,7 @@ export const deleteUser = async (id: string) => {
   try {
     const findUser = await getUserById(id);
     if (!findUser) {
-      throw new HttpException(HttpStatus.NOT_FOUND, "User does not exist");
+      throw new HttpException(HttpStatus.NOT_FOUND, "User not found");
     }
 
     await prisma.user.delete({ where: { id } });
