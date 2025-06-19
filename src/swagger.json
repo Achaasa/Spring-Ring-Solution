@@ -1,260 +1,1153 @@
-
 {
-    "openapi":"3.1.0",
-        "info": {
-            "title": "EduQuest API Documentation",
-            "version": "1.0.0",
-            "description": "API documentation for EduQuest"
-        },
-        "servers": [
-            {
-                "url": "http://localhost:4500/api",
-                "description": "Development server"
-            },
-            {
-                "url": "https://eduquest.edu.gh",
-                "description": "Production server"
-            }
-        ],
-        "tags":[
-            {
-                "name": "Tutors",
-                "description":"tutors endpoints"
-            },
-            {
-                "name": "Students",
-                "description":"students endpoints"
-            }
-        ],
-        "paths": {
-            "/students":{
-                "get":{
-                    "summary": "Get all students",
-                    "description": "Returns all students",
-                    "tags": ["Students"],
-                    "responses": {
-                        "200": {
-                            "description": "Students fetched successfully",
-                            "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "$ref": "#/components/schemas/Student"
-                                    }
-                                }
-                            }
-                        },
-                        "401": {
-                            "description": "Unauthorized"
-                        }
-                    }
-                }
-            },
-           
-            "/tutors":{
-                "get":{
-                    "summary": "Get all tutors",
-                    "description": "Returns all tutors",
-                    "tags": ["Tutors"],
-                    "responses": {
-                        "200": {
-                            "description": "Tutors fetched successfully",
-                            "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "$ref": "#/components/schemas/Tutor"
-                                    }
-                                }
-                            }
-                        },
-                        "401": {
-                            "description": "Unauthorized"
-                        }
-                    }
-                }
-            },
-            "/tutors/{id}": {
-                "get": {
-                    "summary": "Get a specific tutor",
-                    "description": "Returns a specific tutor",
-                    "tags": ["Tutors"],
-                    "parameters": [
-                        {
-                            "name": "id",
-                            "in": "path",
-                            "required": true,
-                            "schema": {
-                                "type": "string"
-                            }
-                        }
-                    ],
-                    "responses": {
-                        "200": {
-                            "description": "Tutor fetched successfully",
-                            "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "$ref": "#/components/schemas/Tutor"
-                                    }
-                                }
-                            }
-                        },
-                        "401": {
-                            "description": "Unauthorized"
-                        },
-                        "404": {
-                            "description": "Tutor not found"
-                        }
-                    }
-                }
-            },
-            "/tutors/save": {
-                "post": {
-                    "summary": "Create a new tutor",
-                    "description": "Creates a new tutor",
-                    "tags": ["Tutors"],
-                    "requestBody": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Tutor"
-                                }
-                            }
-                        }
-                    },
-                    "responses": {
-                        "201": {
-                            "description": "Tutor created successfully",
-                            "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "$ref": "#/components/schemas/Tutor"
-                                    }
-                                }
-                            }
-                        },
-                        "401": {
-                            "description": "Unauthorized"
-                        },
-                        "422": {
-                            "description": "Validation error"
-                        }
-                    }
-                }
-            }
-
-        },
-       
-        "components": {
-            "schemas": {
-                "Tutor": {
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "string"
-                        },
-                        "firstName": {
-                            "type": "string"
-                        },
-                        "lastName": {
-                            "type": "string"
-                        },
-                        "otherName": {
-                            "type": "string"
-                        },
-                        "email": {
-                            "type": "string"
-                        },
-                        "password": {
-                            "type": "string"
-                        },
-                        "gender": {
-                            "type": "string"
-                        },
-                        "createdAt": {
-                            "type": "string",
-                            "format": "date-time"
-                        },
-                        "updatedAt": {
-                            "type": "string",
-                            "format": "date-time"
-                        }
-                    },
-                    "required": ["firstName", "lastName", "otherName", "email", "password", "gender"],
-                    "description": "Tutor model"
-                },
-                "Student": {
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "string"
-                        },
-                        "firstName": {
-                            "type": "string"
-                        },
-                        "lastName": {
-                            "type": "string"
-                        },
-                        "otherName": {
-                            "type": "string"
-                        },
-                        "email": {
-                            "type": "string"
-                        },
-                        "password": {
-                            "type": "string"
-                        },
-                        "gender": {
-                            "type": "string"
-                        },
-                        "createdAt": {
-                            "type": "string",
-                            "format": "date-time"
-                        },
-                        "updatedAt": {
-                            "type": "string",
-                            "format": "date-time"
-                        }
-                    },
-                    "required": ["firstName", "lastName", "otherName", "email", "password", "gender"],
-                    "description": "Student model"
-                }
-            },
-            "securitySchemes": {
-                "BearerAuth": {
-                    "type": "http",
-                    "scheme": "bearer",
-                    "bearerFormat": "JWT"
-                }
-            },
-            "responses": {
-                "Unauthorized": {
-                    "description": "Unauthorized request"
-                }
-            },
-            "parameters": {
-                "Authorization": {
-                    "name": "Authorization",
-                    "in": "header",
-                    "required": true,
-                    "schema": {
-                        "type": "string",
-                        "format": "bearer"
-                    }
-                },
-                "id": {
-                    "name": "id",
-                    "in": "path",
-                    "required": true,
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            },
-        "security": [
-            {
-                "BearerAuth": []
-            }
-        ]
-       
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Spring Ring API Documentation",
+    "version": "1.0.0",
+    "description": "API documentation for Spring Ring Services"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:4500",
+      "description": "Development server"
     }
+  ],
+  "tags": [
+    {
+      "name": "Users",
+      "description": "User management endpoints"
+    },
+    {
+      "name": "Services",
+      "description": "Service management endpoints"
+    },
+    {
+      "name": "Bookings",
+      "description": "Booking management endpoints"
+    },
+    {
+      "name": "Payments",
+      "description": "Payment management endpoints"
+    },
+    {
+      "name": "Feedbacks",
+      "description": "Feedback management endpoints"
+    },
+    {
+      "name": "Notifications",
+      "description": "Notification management endpoints"
+    },
+    {
+      "name": "Analytics",
+      "description": "Analytics endpoints"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["USER", "ADMIN"]
+          },
+          "imageKey": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["ACTIVE", "BANNED", "DELETED"]
+          }
+        },
+        "required": ["email", "password", "name", "phoneNumber"]
+      },
+      "Service": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["SECURITY", "CLEANING"]
+          }
+        },
+        "required": ["name", "type"]
+      },
+      "Booking": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "serviceId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["PENDING", "ACCEPTED", "REJECTED"]
+          }
+        },
+        "required": ["userId", "serviceId"]
+      },
+      "Payment": {
+        "type": "object",
+        "properties": {
+          "bookingId": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["SUCCESS", "FAILED", "PENDING", "REFUNDED"]
+          }
+        },
+        "required": ["bookingId", "amount"]
+      },
+      "Feedback": {
+        "type": "object",
+        "properties": {
+          "bookingId": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          }
+        },
+        "required": ["bookingId", "message", "rating"]
+      }
+    }
+  },
+  "paths": {
+    "/users/signup": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Register a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "photo": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "userData": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully"
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/users/profile": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get user profile",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User profile retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/users/get": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get all users",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all users"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      }
+    },
+    "/users/get/{userId}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get user by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the user to retrieve"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found successfully"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "User login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/users/logout": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "User logout",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logout successful"
+          }
+        }
+      }
+    },
+    "/services/add": {
+      "post": {
+        "tags": ["Services"],
+        "summary": "Create a new service",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Service"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Service created successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      }
+    },
+    "/services/get": {
+      "get": {
+        "tags": ["Services"],
+        "summary": "Get all services",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of services retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/services/get/{id}": {
+      "get": {
+        "tags": ["Services"],
+        "summary": "Get service by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the service to retrieve"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service found successfully"
+          },
+          "404": {
+            "description": "Service not found"
+          }
+        }
+      }
+    },
+    "/services/update/{id}": {
+      "put": {
+        "tags": ["Services"],
+        "summary": "Update service",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the service to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Service"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Service updated successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          },
+          "404": {
+            "description": "Service not found"
+          }
+        }
+      }
+    },
+    "/services/delete/{id}": {
+      "delete": {
+        "tags": ["Services"],
+        "summary": "Delete service",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the service to delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          },
+          "404": {
+            "description": "Service not found"
+          }
+        }
+      }
+    },
+   
+    "/analytics/bookings": {
+      "get": {
+        "tags": ["Analytics"],
+        "summary": "Get booking statistics",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booking statistics"
+          }
+        }
+      }
+    },
+    "/bookings/add": {
+      "post": {
+        "tags": ["Bookings"],
+        "summary": "Create a new booking",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Booking"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Booking created successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/bookings/get": {
+      "get": {
+        "tags": ["Bookings"],
+        "summary": "Get all bookings",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of bookings retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/bookings/get/{bookingId}": {
+      "get": {
+        "tags": ["Bookings"],
+        "summary": "Get booking by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "bookingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the booking to retrieve"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booking found successfully"
+          },
+          "404": {
+            "description": "Booking not found"
+          }
+        }
+      }
+    },
+    "/bookings/update/{bookingId}": {
+      "put": {
+        "tags": ["Bookings"],
+        "summary": "Update a booking",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "bookingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the booking to update"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Booking"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Booking updated successfully"
+          },
+          "404": {
+            "description": "Booking not found"
+          }
+        }
+      }
+    },
+    "/bookings/delete/{bookingId}": {
+      "delete": {
+        "tags": ["Bookings"],
+        "summary": "Delete a booking",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "bookingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the booking to delete"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booking deleted successfully"
+          },
+          "404": {
+            "description": "Booking not found"
+          }
+        }
+      }
+    },
+    "/bookings/update/{bookingId}/approve": {
+      "post": {
+        "tags": ["Bookings"],
+        "summary": "Approve a booking",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "bookingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the booking to approve"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booking approved successfully"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          },
+          "404": {
+            "description": "Booking not found"
+          }
+        }
+      }
+    },
+    "/bookings/update/{bookingId}/reject": {
+      "post": {
+        "tags": ["Bookings"],
+        "summary": "Reject a booking",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "bookingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the booking to reject"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booking rejected successfully"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          },
+          "404": {
+            "description": "Booking not found"
+          }
+        }
+      }
+    },
+    "/bookings/status/pending": {
+      "get": {
+        "tags": ["Bookings"],
+        "summary": "Get all pending bookings",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of pending bookings"
+          }
+        }
+      }
+    },
+    "/bookings/status/approved": {
+      "get": {
+        "tags": ["Bookings"],
+        "summary": "Get all approved bookings",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of approved bookings"
+          }
+        }
+      }
+    },
+    "/bookings/status/rejected": {
+      "get": {
+        "tags": ["Bookings"],
+        "summary": "Get all rejected bookings",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of rejected bookings"
+          }
+        }
+      }
+    },
+    "/payments/initiate": {
+      "post": {
+        "tags": ["Payments"],
+        "summary": "Initiate a payment for a booking",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Payment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment initiated successfully"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+   
+    "/payments/confirm/{reference}": {
+      "get": {
+        "tags": ["Payments"],
+        "summary": "Verify a payment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "reference",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Payment reference to verify"
+          }
+        ],
+        
+        "responses": {
+          "200": {
+            "description": "Payment verified successfully"
+          },
+          "400": {
+            "description": "Invalid reference"
+          }
+        }
+      }
+    },
+    "/payments/get": {
+      "get": {
+        "tags": ["Payments"],
+        "summary": "Get all payments",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of payments retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/payments/get/{id}": {
+      "get": {
+        "tags": ["Payments"],
+        "summary": "Get payment by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the payment to retrieve"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment found successfully"
+          },
+          "404": {
+            "description": "Payment not found"
+          }
+        }
+      }
+    },
+
+    "/feedbacks/add": {
+      "post": {
+        "tags": ["Feedbacks"],
+        "summary": "Create a new feedback",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Feedback"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Feedback created successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/feedbacks/get": {
+      "get": {
+        "tags": ["Feedbacks"],
+        "summary": "Get all feedbacks",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of feedbacks retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/feedbacks/get/{id}": {
+      "get": {
+        "tags": ["Feedbacks"],
+        "summary": "Get feedback by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the feedback to retrieve"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Feedback found successfully"
+          },
+          "404": {
+            "description": "Feedback not found"
+          }
+        }
+      }
+    },
+    "/feedbacks/update/{id}": {
+      "put": {
+        "tags": ["Feedbacks"],
+        "summary": "Update feedback",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the feedback to update"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Feedback"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Feedback updated successfully"
+          },
+          "404": {
+            "description": "Feedback not found"
+          }
+        }
+      }
+    },
+    "/feedbacks/delete/{id}": {
+      "delete": {
+        "tags": ["Feedbacks"],
+        "summary": "Delete feedback",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the feedback to delete"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Feedback deleted successfully"
+          },
+          "404": {
+            "description": "Feedback not found"
+          }
+        }
+      }
+    },
+    "/notifications/get/{userId}": {
+      "get": {
+        "tags": ["Notifications"],
+        "summary": "Get All notification for user notifications",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the feedback to delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of notifications retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/notifications/read/{id}": {
+      "put": {
+        "tags": ["Notifications"],
+        "summary": "Mark notification as read",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the notification to mark as read"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notification marked as read successfully"
+          },
+          "404": {
+            "description": "Notification not found"
+          }
+        }
+      }
+    },
+    
+    
+    "/analytics/users": {
+      "get": {
+        "tags": ["Analytics"],
+        "summary": "Get user statistics",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User analytics retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      }
+    },
+    "/analytics/services": {
+      "get": {
+        "tags": ["Analytics"],
+        "summary": "Get service statistics",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service analytics retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      }
+    },
+    "/analytics/payments": {
+      "get": {
+        "tags": ["Analytics"],
+        "summary": "Get payment statistics",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment analytics retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      }
+    },
+    "/analytics/feedback": {
+      "get": {
+        "tags": ["Analytics"],
+        "summary": "Get feedback statistics",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Feedback statistics retrieved successfully"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      }
+    }
+  }
 }

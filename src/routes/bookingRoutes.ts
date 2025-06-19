@@ -26,22 +26,22 @@ bookingRouter.post("/add", createBookingHandler);
 bookingRouter.get("/get", getBookingsHandler);
 
 // Get booking by ID
-bookingRouter.get("/get/:id", getBookingByIdHandler);
+bookingRouter.get("/get/:bookingId", getBookingByIdHandler);
 
 // Update booking
-bookingRouter.put("/update/:id", updateBookingHandler);
+bookingRouter.put("/update/:bookingId", updateBookingHandler);
 
 // Delete booking
-bookingRouter.delete("/delete/:id", deleteBookingHandler);
+bookingRouter.delete("/delete/:bookingId", deleteBookingHandler);
 
 // Admin routes for booking management
 bookingRouter.post(
-  "/update/:id/approve",
+  "/update/:bookingId/approve",
   authorizeRole(["ADMIN"]),
   approveBookingHandler,
 );
 bookingRouter.post(
-  "/update/:id/reject",
+  "/update/:bookingId/reject",
   authorizeRole(["ADMIN"]),
   rejectBookingHandler,
 );

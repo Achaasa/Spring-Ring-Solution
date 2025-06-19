@@ -10,7 +10,6 @@ generator erd {
 
 generator client {
   provider = "prisma-client-js"
- 
 }
 
 datasource db {
@@ -69,7 +68,8 @@ model Booking {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  payment Payment?
+  payment  Payment?
+  Feedback Feedback?
 }
 
 model Payment {
@@ -87,6 +87,8 @@ model Feedback {
   userId    String
   message   String
   rating    Int      @default(0)
+  booking   Booking  @relation(fields: [bookingId], references: [id])
+  bookingId String   @unique // one feedback per booking
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -102,7 +104,6 @@ model Notification {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
 
 enum Role {
   USER

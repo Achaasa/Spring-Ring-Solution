@@ -39,8 +39,8 @@ export const getBookingsHandler = async (req: Request, res: Response) => {
 
 export const getBookingByIdHandler = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const booking = await getBookingById(id);
+    const { bookingId } = req.params;
+    const booking = await getBookingById(bookingId);
     res.status(HttpStatus.OK).json(booking);
   } catch (error) {
     const err = formatPrismaError(error);
@@ -50,8 +50,8 @@ export const getBookingByIdHandler = async (req: Request, res: Response) => {
 
 export const updateBookingHandler = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const booking = await updateBooking(id, req.body);
+    const { bookingId } = req.params;
+    const booking = await updateBooking(bookingId, req.body);
     res.status(HttpStatus.OK).json(booking);
   } catch (error) {
     const err = formatPrismaError(error);
@@ -61,8 +61,8 @@ export const updateBookingHandler = async (req: Request, res: Response) => {
 
 export const deleteBookingHandler = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    await deleteBooking(id);
+    const { bookingId } = req.params;
+    await deleteBooking(bookingId);
     res.status(HttpStatus.NO_CONTENT).send();
   } catch (error) {
     const err = formatPrismaError(error);
@@ -72,9 +72,9 @@ export const deleteBookingHandler = async (req: Request, res: Response) => {
 
 export const approveBookingHandler = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const { adminId } = req.body;
-    const booking = await approveBooking(id, adminId);
+    const { bookingId } = req.params;
+    const { id } = req.user; // taking the id from the request user object
+    const booking = await approveBooking(bookingId, id);
     // Create notification for the user
     await createBookingNotification(booking.userId, booking.id, "APPROVED");
     res.status(HttpStatus.OK).json(booking);
@@ -86,9 +86,9 @@ export const approveBookingHandler = async (req: Request, res: Response) => {
 
 export const rejectBookingHandler = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { bookingId } = req.params;
     const { adminId } = req.body;
-    const booking = await rejectBooking(id, adminId);
+    const booking = await rejectBooking(bookingId, adminId);
     // Create notification for the user
     await createBookingNotification(booking.userId, booking.id, "REJECTED");
     res.status(HttpStatus.OK).json(booking);

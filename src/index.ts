@@ -8,6 +8,8 @@ import { createAdminUser } from "./controller/adminPanel";
 import { ErrorResponse } from "./utils/types";
 import HttpException from "./utils/http-error";
 import { HttpStatus } from "./utils/http-status";
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "./swagger.json";
 // import * as swaggerDocs from './swagger.json'
 dotenv.config();
 
@@ -34,7 +36,8 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
 });
 
-
+// Swagger UI setup
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use("/api", mainRouter);
 
@@ -59,6 +62,9 @@ const startServer = async () => {
     await createAdminUser(); // Call the function to create the admin user
     app.listen(port, () => {
       console.log(`[server]: Server is running at http://localhost:${port}`);
+      console.log(
+        `Swagger documentation available at http://localhost:${port}/api-docs`,
+      );
     });
   } catch (error) {
     const err = error as ErrorResponse;

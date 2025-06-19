@@ -1,24 +1,22 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "../utils/prisma";
 import HttpException from "../utils/http-error";
 import { HttpStatus } from "../utils/http-status";
+import { Notification } from "@prisma/client";
+import { notificationSchema } from "../zodSchema/notificationSchema";
 import { formatPrismaError } from "../utils/formatPrisma";
-import {
-  notificationSchema,
-  updateNotificationSchema,
-} from "../zodSchema/notificationSchema";
 
-const prismaClient = new PrismaClient();
-
-export const createNotification = async (notificationData: {
-  userId: string;
-  title: string;
-  message: string;
-  type: string;
-  isRead?: boolean;
-}) => {
+export const createNotification = async (notificationData: Notification) => {
   try {
+    const validateNotification = notificationSchema.safeParse(notificationData);
+    if (!validateNotification.success) {
+      const errors = validateNotification.error.issues.map(
+        ({ message, path }) => `${path}: ${message}`,
+      );
+      throw new HttpException(HttpStatus.BAD_REQUEST, errors.join(". "));
+    }
+
     // Check if user exists
-    const user = await prismaClient.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: notificationData.userId },
     });
 
@@ -26,7 +24,7 @@ export const createNotification = async (notificationData: {
       throw new HttpException(HttpStatus.NOT_FOUND, "User not found");
     }
 
-    const newNotification = await prismaClient.notification.create({
+    const newNotification = await prisma.notification.create({
       data: notificationData,
       include: {
         user: true,
@@ -34,23 +32,19 @@ export const createNotification = async (notificationData: {
     });
     return newNotification;
   } catch (error) {
-    throw new HttpException(
-      HttpStatus.INTERNAL_SERVER_ERROR,
-      formatPrismaError(error),
-    );
+    if (error instanceof HttpException) {
+      throw error;
+    }
+    throw formatPrismaError(error);
   }
 };
 
 export const getNotifications = async (userId: string) => {
   try {
-    const notifications = await prismaClient.notification.findMany({
+    const notifications = await prisma.notification.findMany({
       where: { userId },
-      include: {
-        user: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
+      include: { user: true },
+      orderBy: { createdAt: "desc" },
     });
     return notifications;
   } catch (error) {
@@ -60,14 +54,12 @@ export const getNotifications = async (userId: string) => {
 
 export const getNotificationById = async (id: string) => {
   try {
-    const notification = await prismaClient.notification.findUnique({
+    const notification = await prisma.notification.findUnique({
       where: { id },
-      include: {
-        user: true,
-      },
+      include: { user: true },
     });
     if (!notification) {
-      throw new HttpException(HttpStatus.NOT_FOUND, "Notification not found.");
+      throw new HttpException(HttpStatus.NOT_FOUND, "Notification not found");
     }
     return notification;
   } catch (error) {
@@ -80,8 +72,9 @@ export const updateNotification = async (
   notificationData: Partial<Notification>,
 ) => {
   try {
-    const validateNotification =
-      updateNotificationSchema.safeParse(notificationData);
+    const validateNotification = notificationSchema
+      .partial()
+      .safeParse(notificationData);
     if (!validateNotification.success) {
       const errors = validateNotification.error.issues.map(
         ({ message, path }) => `${path}: ${message}`,
@@ -89,19 +82,17 @@ export const updateNotification = async (
       throw new HttpException(HttpStatus.BAD_REQUEST, errors.join(". "));
     }
 
-    const findNotification = await prismaClient.notification.findUnique({
+    const findNotification = await prisma.notification.findUnique({
       where: { id },
     });
     if (!findNotification) {
       throw new HttpException(HttpStatus.NOT_FOUND, "Notification not found");
     }
 
-    const updatedNotification = await prismaClient.notification.update({
+    const updatedNotification = await prisma.notification.update({
       where: { id },
       data: notificationData,
-      include: {
-        user: true,
-      },
+      include: { user: true },
     });
     return updatedNotification;
   } catch (error) {
@@ -113,13 +104,11 @@ export const deleteNotification = async (id: string) => {
   try {
     const findNotification = await getNotificationById(id);
     if (!findNotification) {
-      throw new HttpException(
-        HttpStatus.NOT_FOUND,
-        "Notification does not exist",
-      );
+      throw new HttpException(HttpStatus.NOT_FOUND, "Notification not found");
     }
-
-    await prismaClient.notification.delete({ where: { id } });
+    await prisma.notification.delete({
+      where: { id },
+    });
   } catch (error) {
     throw formatPrismaError(error);
   }
@@ -127,15 +116,22 @@ export const deleteNotification = async (id: string) => {
 
 export const markNotificationAsRead = async (id: string) => {
   try {
-    const notification = await prismaClient.notification.update({
+    const notification = await prisma.notification.findUnique({
+      where: { id },
+    });
+
+    if (!notification) {
+      throw new HttpException(HttpStatus.NOT_FOUND, "Notification not found");
+    }
+
+    const updatedNotification = await prisma.notification.update({
       where: { id },
       data: { isRead: true },
+      include: { user: true },
     });
-    return notification;
+
+    return updatedNotification;
   } catch (error) {
-    throw new HttpException(
-      HttpStatus.INTERNAL_SERVER_ERROR,
-      formatPrismaError(error),
-    );
+    throw formatPrismaError(error);
   }
 };
