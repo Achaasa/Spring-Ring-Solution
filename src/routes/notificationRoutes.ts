@@ -21,7 +21,7 @@ notificationRouter.get("/get/:userId", getNotificationsHandler);
 notificationRouter.get("/get/:id", getNotificationByIdHandler);
 
 // Mark a notification as read
-notificationRouter.patch("/:id/read", markNotificationAsReadHandler);
+notificationRouter.put("/read/:id", markNotificationAsReadHandler);
 
 // Delete a notification
 notificationRouter.delete("/:id", deleteNotificationHandler);
