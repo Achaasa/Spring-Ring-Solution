@@ -1,7 +1,6 @@
 import prisma from "../utils/prisma";
 import HttpException from "../utils/http-error";
 import { HttpStatus } from "../utils/http-status";
-import { ErrorResponse } from "../utils/types";
 import { updateUserSchema, userSchema } from "../zodSchema/userSchema";
 import { hashPassword } from "../utils/bcrypt";
 import cloudinary from "../utils/cloudinary";
@@ -11,6 +10,7 @@ import { jwtDecode } from "jwt-decode";
 import { UserPayload } from "../utils/jsonwebtoken";
 import { formatPrismaError } from "../utils/formatPrisma";
 import { User } from "@prisma/client";
+import { generateResetPasswordEmail } from "../services/generateResetPasswword";
 
 export const createUser = async (
   UserData: User,
@@ -186,6 +186,37 @@ export const getUserProfileHelper = async (authHeader: string) => {
     }
 
     return user; // Return the found user
+  } catch (error) {
+    throw formatPrismaError(error);
+  }
+};
+
+
+export const resetPassword = async (email: string) => {
+  if (!email) {
+    throw new HttpException(HttpStatus.BAD_REQUEST, "Email is required");
+  }
+  try {
+    const user = await prisma.user.findFirst({
+      where: { email, delFlag: false },
+    });
+
+    if (!user) {
+      throw new HttpException(HttpStatus.NOT_FOUND, "User not found");
+    }
+
+    const newPassword = generatePassword();
+    const hashedPassword = await hashPassword(newPassword);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { password: hashedPassword, changedPassword: false },
+    });
+
+    const htmlContent = generateResetPasswordEmail(email, newPassword);
+    await sendEmail(email, "Password Reset", htmlContent);
+
+    return { message: "Password reset successfully. Check your email." };
   } catch (error) {
     throw formatPrismaError(error);
   }

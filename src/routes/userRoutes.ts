@@ -8,6 +8,7 @@ import {
   userLogIn,
   getUserProfile,
   logout,
+  resetUserPassword,
 } from "../controller/userController";
 import upload from "../utils/multer";
 import { validatePayload } from "../middleware/validate-payload";
@@ -72,5 +73,6 @@ userRouter.get("/profile", authenticateJWT, getUserProfile);
 
 // User logout
 userRouter.post("/logout", authenticateJWT, logout);
+userRouter.post("/reset-password", resetUserPassword);
 
 export default userRouter;

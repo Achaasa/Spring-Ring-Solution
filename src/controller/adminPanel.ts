@@ -25,7 +25,7 @@ export const createAdminUser = async () => {
           email: adminEmail,
           password: hashedPassword,
           phoneNumber: "1234567890", // Set a default or random number
-          role: "ADMIN", 
+          role: "SUPER_ADMIN", // Set the role to SUPER_ADMIN
           imageKey:"",
           imageUrl:"",
         },
