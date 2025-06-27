@@ -36,7 +36,7 @@ export const createBooking = async (bookingData: Booking) => {
       include: {
         user: true,
         service: true,
-        admin: true,
+        
       },
     });
 
@@ -51,7 +51,7 @@ export const createBooking = async (bookingData: Booking) => {
 
 export const getBookings = async () => {
   try {
-    const bookings = await prisma.booking.findMany({
+    const bookings = await prisma.booking.findMany({where: {delFlag: false},
       include: {
         user: true,
         service: true,
@@ -67,7 +67,7 @@ export const getBookings = async () => {
 export const getBookingById = async (id: string) => {
   try {
     const booking = await prisma.booking.findUnique({
-      where: { id },
+      where: { id ,delFlag: false},
       include: {
         user: true,
         service: true,
@@ -99,7 +99,7 @@ export const updateBooking = async (
       throw new HttpException(HttpStatus.BAD_REQUEST, errors.join(". "));
     }
 
-    const findBooking = await prisma.booking.findUnique({ where: { id } });
+    const findBooking = await prisma.booking.findUnique({ where: { id,delFlag:false } });
     if (!findBooking) {
       throw new HttpException(HttpStatus.NOT_FOUND, "Booking not found");
     }
@@ -126,7 +126,7 @@ export const deleteBooking = async (id: string) => {
       throw new HttpException(HttpStatus.NOT_FOUND, "Booking not found");
     }
 
-    await prisma.booking.delete({ where: { id } });
+    await prisma.booking.update({ where: { id },data: { delFlag: true } });
   } catch (error) {
     throw formatPrismaError(error);
   }
@@ -136,7 +136,7 @@ export const approveBooking = async (id: string, adminId: string) => {
   try {
 
     const booking = await prisma.booking.findUnique({
-      where: { id },
+      where: { id ,delFlag: false },
     });
     if (!booking) {
       throw new HttpException(HttpStatus.NOT_FOUND, "Booking not found");
@@ -177,7 +177,7 @@ export const approveBooking = async (id: string, adminId: string) => {
 export const rejectBooking = async (id: string, adminId: string) => {
   try {
     const booking = await prisma.booking.findUnique({
-      where: { id },
+      where: { id, delFlag: false },
       include: {
         user: true,
         service: true,
@@ -222,7 +222,7 @@ export const getPendingBookings = async () => {
   try {
     const bookings = await prisma.booking.findMany({
       where: {
-        status: "PENDING",
+        status: "PENDING",delFlag: false
       },
       include: {
         user: true,
@@ -240,7 +240,7 @@ export const getApprovedBookings = async () => {
   try {
     const bookings = await prisma.booking.findMany({
       where: {
-        status: "ACCEPTED",
+        status: "ACCEPTED",delFlag: false
       },
       include: {
         user: true,
@@ -258,7 +258,7 @@ export const getRejectedBookings = async () => {
   try {
     const bookings = await prisma.booking.findMany({
       where: {
-        status: "REJECTED",
+        status: "REJECTED",delFlag: false
       },
       include: {
         user: true,

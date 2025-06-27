@@ -13,15 +13,15 @@
   {
     "modelName": "client",
     "fields": [
-      "provider",
-      "output"
+      "provider"
     ]
   },
   {
     "modelName": "db",
     "fields": [
       "provider",
-      "url"
+      "url",
+      "directUrl"
     ]
   },
   {
@@ -42,7 +42,9 @@
       "updatedAt",
       "imageKey",
       "imageUrl",
-      "status"
+      "status",
+      "changedPassword",
+      "delFlag"
     ]
   },
   {
@@ -53,7 +55,8 @@
       "description",
       "createdAt",
       "updatedAt",
-      "type"
+      "type",
+      "delFlag"
     ]
   },
   {
@@ -67,7 +70,9 @@
       "status",
       "createdAt",
       "updatedAt",
-      "payment"
+      "payment",
+      "Feedback",
+      "delFlag"
     ]
   },
   {
@@ -87,8 +92,10 @@
       "userId",
       "message",
       "rating",
+      "bookingId",
       "createdAt",
-      "updatedAt"
+      "updatedAt",
+      "delFlag"
     ]
   },
   {
@@ -101,14 +108,16 @@
       "isRead",
       "type",
       "createdAt",
-      "updatedAt"
+      "updatedAt",
+      "delFlag"
     ]
   },
   {
     "modelName": "Role",
     "fields": [
       "USER",
-      "ADMIN"
+      "ADMIN",
+      "SUPER_ADMIN"
     ]
   },
   {

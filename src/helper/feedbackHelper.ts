@@ -41,7 +41,7 @@ export const createFeedback = async (feedbackData: Feedback) => {
 
 export const getFeedbacks = async () => {
   try {
-    const feedbacks = await prisma.feedback.findMany({
+    const feedbacks = await prisma.feedback.findMany({where: {delFlag: false},
       include: {
         user: true,
       },
@@ -55,7 +55,7 @@ export const getFeedbacks = async () => {
 export const getFeedbackById = async (id: string) => {
   try {
     const feedback = await prisma.feedback.findUnique({
-      where: { id },
+      where: { id ,delFlag: false},
       include: {
         user: true,
       },
@@ -83,7 +83,7 @@ export const updateFeedback = async (
     }
 
     const findFeedback = await prisma.feedback.findUnique({
-      where: { id },
+      where: { id ,delFlag: false},
     });
     if (!findFeedback) {
       throw new HttpException(HttpStatus.NOT_FOUND, "Feedback not found");
@@ -108,8 +108,8 @@ export const deleteFeedback = async (id: string) => {
     if (!findFeedback) {
       throw new HttpException(HttpStatus.NOT_FOUND, "Feedback not found");
     }
-    await prisma.feedback.delete({
-      where: { id },
+    await prisma.feedback.update({
+      where: { id },data: { delFlag: true }
     });
   } catch (error) {
     throw formatPrismaError(error);

@@ -602,7 +602,7 @@
       }
     },
     "/bookings/delete/{bookingId}": {
-      "delete": {
+      "put": {
         "tags": ["Bookings"],
         "summary": "Delete a booking",
         "parameters": [
@@ -973,7 +973,7 @@
       }
     },
     "/feedbacks/delete/{id}": {
-      "delete": {
+      "put": {
         "tags": ["Feedbacks"],
         "summary": "Delete feedback",
         "parameters": [

@@ -260,3 +260,22 @@ export const logout = async (
     res.status(err.status).json({ message: err.message });
   }
 };
+
+
+export const resetUserPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const email = req.body.email;
+  try {
+    const result = await userHelper.resetPassword(email);
+    res.status(HttpStatus.OK).json({
+      message: "Password reset link sent to your email",
+      data: result,
+    });
+  } catch (error) {
+    const err = formatPrismaError(error); // Ensure this function is used
+    res.status(err.status).json({ message: err.message });
+  }
+};
