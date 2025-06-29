@@ -32,7 +32,7 @@ bookingRouter.get("/get/:bookingId", getBookingByIdHandler);
 bookingRouter.put("/update/:bookingId", updateBookingHandler);
 
 // Delete booking
-bookingRouter.delete("/delete/:bookingId", deleteBookingHandler);
+bookingRouter.put("/delete/:bookingId", deleteBookingHandler);
 
 // Admin routes for booking management
 bookingRouter.post(
