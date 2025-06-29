@@ -9,6 +9,9 @@
     {
       "url": "http://localhost:4500",
       "description": "Development server"
+    },{
+      "url": "https://spring-ring-solution.onrender.com",
+      "description": "Production server"
     }
   ],
   "tags": [
