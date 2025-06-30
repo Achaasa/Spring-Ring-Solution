@@ -47,7 +47,7 @@ describe("Payment Controller Tests", () => {
         authorizationUrl: "https://test.url",
         paymentId: "123",
       };
-      mockRequest.body = { bookingId: "123", amount: 1000 };
+      mockRequest.body = { bookingId: "123"};
       (paymentHelper.initializePayment as jest.Mock).mockResolvedValue(
         mockPayment,
       );
