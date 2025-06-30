@@ -13,8 +13,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-   url       = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -39,8 +39,8 @@ model User {
   imageKey        String
   imageUrl        String
   status          UserStatus     @default(ACTIVE)
-  changedPassword Boolean @default(true)
-  delFlag Boolean @default(false)
+  changedPassword Boolean        @default(true)
+  delFlag         Boolean        @default(false)
 }
 
 model Service {
@@ -51,8 +51,8 @@ model Service {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   type        ServiceType
-  delFlag Boolean @default(false)
-
+  delFlag     Boolean     @default(false)
+ 
 }
 
 model Booking {
@@ -75,8 +75,8 @@ model Booking {
 
   payment  Payment?
   Feedback Feedback?
-  delFlag Boolean @default(false)
-
+  delFlag  Boolean   @default(false)
+   price       Float?
 }
 
 model Payment {
@@ -98,8 +98,7 @@ model Feedback {
   bookingId String   @unique // one feedback per booking
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  delFlag Boolean @default(false)
-
+  delFlag   Boolean  @default(false)
 }
 
 model Notification {
@@ -112,8 +111,7 @@ model Notification {
   type      String // e.g., "BOOKING", "PAYMENT", "SYSTEM"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  delFlag Boolean @default(false)
-
+  delFlag   Boolean  @default(false)
 }
 
 enum Role {
@@ -144,4 +142,5 @@ enum UserStatus {
 enum ServiceType {
   SECURITY
   CLEANING
+  COMBINED
 }

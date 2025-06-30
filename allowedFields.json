@@ -72,7 +72,8 @@
       "updatedAt",
       "payment",
       "Feedback",
-      "delFlag"
+      "delFlag",
+      "price"
     ]
   },
   {
@@ -149,7 +150,8 @@
     "modelName": "ServiceType",
     "fields": [
       "SECURITY",
-      "CLEANING"
+      "CLEANING",
+      "COMBINED"
     ]
   }
 ]

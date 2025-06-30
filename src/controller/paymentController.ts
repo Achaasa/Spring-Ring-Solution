@@ -13,7 +13,7 @@ import { formatPrismaError } from "../utils/formatPrisma";
 export const initializePaymentHandler = async (req: Request, res: Response) => {
   try {
     const { bookingId, amount } = req.body;
-    const result = await initializePayment(bookingId, amount);
+    const result = await initializePayment(bookingId);
     res.status(HttpStatus.OK).json(result);
   } catch (error) {
     const err = formatPrismaError(error);

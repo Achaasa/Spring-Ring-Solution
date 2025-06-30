@@ -124,15 +124,13 @@
           "bookingId": {
             "type": "string"
           },
-          "amount": {
-            "type": "number"
-          },
+         
           "status": {
             "type": "string",
             "enum": ["SUCCESS", "FAILED", "PENDING", "REFUNDED"]
           }
         },
-        "required": ["bookingId", "amount"]
+        "required": ["bookingId"]
       },
       "Feedback": {
         "type": "object",
