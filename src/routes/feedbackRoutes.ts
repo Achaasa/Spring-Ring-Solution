@@ -8,7 +8,7 @@ import {
 } from "../controller/feedbackController";
 import { authenticateJWT } from "../utils/jsonwebtoken";
 
-const feedbackRouter =Router();
+const feedbackRouter = Router();
 
 // All feedback routes require authentication
 feedbackRouter.use(authenticateJWT);

@@ -18,7 +18,7 @@ serviceRouter.use(authenticateJWT);
 serviceRouter.post(
   "/add",
   validatePayload("Service"),
-  authorizeRole(["ADMIN"]),
+  authorizeRole(["SUPER_ADMIN","ADMIN"]),
   createServiceHandler,
 );
 
@@ -32,14 +32,14 @@ serviceRouter.get("/get/:id", getServiceByIdHandler);
 serviceRouter.put(
   "/update/:id",
   validatePayload("Service"),
-  authorizeRole(["ADMIN"]),
+  authorizeRole(["ADMIN","SUPER_ADMIN"]),
   updateServiceHandler,
 );
 
 // Delete service
 serviceRouter.delete(
   "/delete/:id",
-  authorizeRole(["ADMIN"]),
+  authorizeRole(["ADMIN","SUPER_ADMIN"]),
   deleteServiceHandler,
 );
 

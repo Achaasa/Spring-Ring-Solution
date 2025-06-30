@@ -10,6 +10,7 @@ import {
   getPendingBookings,
   getApprovedBookings,
   getRejectedBookings,
+  getBookingsByUserId,
 } from "../helper/bookingHelper";
 import { createBookingNotification } from "../services/notificationService";
 import { HttpStatus } from "../utils/http-status";
@@ -136,3 +137,18 @@ export const getRejectedBookingsHandler = async (
     res.status(err.status).json({ message: err.message });
   }
 };
+
+export const getBookingByUserIdHandler = async (
+  req: Request,
+  res: Response,
+) => {  
+  try {
+    const userId = req.user.id; // Assuming user ID is in the request object
+    const bookings = await getBookingsByUserId(userId);
+    res.status(HttpStatus.OK).json(bookings);
+  } catch (error) {
+    const err = formatPrismaError(error);
+    res.status(err.status).json({ message: err.message });
+    
+  }
+}
