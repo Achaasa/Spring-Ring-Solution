@@ -31,6 +31,8 @@ app.use(
     origin: [
       "http://localhost:2020",
       "https://spring-ring-bloom-ui.vercel.app",
+      "https://spring-ring-solution.onrender.com",
+      "https://spring-ring-solution.onrender.com/api",
     ],
     credentials: true,
   }),
