@@ -41,7 +41,7 @@ describe("Admin Panel Controller", () => {
         id: "1",
         name: "Admin",
         email: "admin@test.com",
-        role: "ADMIN",
+        role: "SUPER_ADMIN",
       });
 
       // Run the function

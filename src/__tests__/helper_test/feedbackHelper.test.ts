@@ -10,7 +10,7 @@ jest.mock("../../utils/prisma", () => ({
     findMany: jest.fn(),
     findUnique: jest.fn(),
     update: jest.fn(),
-    delete: jest.fn(),
+    delete: jest.fn(), // Still mocked in case used later
   },
   user: {
     findUnique: jest.fn(),
@@ -55,7 +55,7 @@ describe("Feedback Helper", () => {
 
   describe("updateFeedback", () => {
     it("should update a feedback successfully", async () => {
-      const updateData = { rating: 4, comment: "Updated comment" };
+      const updateData = { rating: 4, message: "Updated comment" };
       (prisma.feedback.findUnique as jest.Mock).mockResolvedValue(mockFeedback);
       (prisma.feedback.update as jest.Mock).mockResolvedValue({
         ...mockFeedback,
@@ -64,20 +64,24 @@ describe("Feedback Helper", () => {
 
       const result = await feedbackHelper.updateFeedback(
         "123e4567-e89b-12d3-a456-426614174000",
-        updateData,
+        updateData
       );
+
       expect(result).toHaveProperty("rating", 4);
-      expect(result).toHaveProperty("comment", "Updated comment");
+      expect(result).toHaveProperty("message", "Updated comment");
+      expect(prisma.feedback.update).toHaveBeenCalledWith({
+        where: { id: "123e4567-e89b-12d3-a456-426614174000" },
+        data: updateData,
+        include: { user: true },
+      });
     });
 
     it("should throw an error if feedback not found", async () => {
       (prisma.feedback.findUnique as jest.Mock).mockResolvedValue(null);
 
       await expect(
-        feedbackHelper.updateFeedback("123e4567-e89b-12d3-a456-426614174000", { rating: 4 }),
-      ).rejects.toThrow(
-        new HttpException(HttpStatus.NOT_FOUND, "Feedback not found"),
-      );
+        feedbackHelper.updateFeedback("123e4567-e89b-12d3-a456-426614174000", { rating: 4 })
+      ).rejects.toThrow(new HttpException(HttpStatus.NOT_FOUND, "Feedback not found"));
     });
   });
 
@@ -89,6 +93,7 @@ describe("Feedback Helper", () => {
       const result = await feedbackHelper.getFeedbacks();
       expect(result).toEqual(mockFeedbacks);
       expect(prisma.feedback.findMany).toHaveBeenCalledWith({
+        where: { delFlag: false },
         include: { user: true },
       });
     });
@@ -101,7 +106,10 @@ describe("Feedback Helper", () => {
       const result = await feedbackHelper.getFeedbackById("123e4567-e89b-12d3-a456-426614174000");
       expect(result).toEqual(mockFeedback);
       expect(prisma.feedback.findUnique).toHaveBeenCalledWith({
-        where: { id: "123e4567-e89b-12d3-a456-426614174000" },
+        where: {
+          id: "123e4567-e89b-12d3-a456-426614174000",
+          delFlag: false,
+        },
         include: { user: true },
       });
     });
@@ -109,29 +117,34 @@ describe("Feedback Helper", () => {
     it("should throw an error if feedback not found", async () => {
       (prisma.feedback.findUnique as jest.Mock).mockResolvedValue(null);
 
-      await expect(feedbackHelper.getFeedbackById("123e4567-e89b-12d3-a456-426614174000")).rejects.toThrow(
-        new HttpException(HttpStatus.NOT_FOUND, "Feedback not found"),
-      );
+      await expect(
+        feedbackHelper.getFeedbackById("123e4567-e89b-12d3-a456-426614174000")
+      ).rejects.toThrow(new HttpException(HttpStatus.NOT_FOUND, "Feedback not found"));
     });
   });
 
   describe("deleteFeedback", () => {
-    it("should delete feedback successfully", async () => {
+    it("should delete feedback successfully (soft delete)", async () => {
       (prisma.feedback.findUnique as jest.Mock).mockResolvedValue(mockFeedback);
-      (prisma.feedback.delete as jest.Mock).mockResolvedValue(mockFeedback);
+      (prisma.feedback.update as jest.Mock).mockResolvedValue({
+        ...mockFeedback,
+        delFlag: true,
+      });
 
       await feedbackHelper.deleteFeedback("123e4567-e89b-12d3-a456-426614174000");
-      expect(prisma.feedback.delete).toHaveBeenCalledWith({
+
+      expect(prisma.feedback.update).toHaveBeenCalledWith({
         where: { id: "123e4567-e89b-12d3-a456-426614174000" },
+        data: { delFlag: true },
       });
     });
 
     it("should throw an error if feedback not found", async () => {
       (prisma.feedback.findUnique as jest.Mock).mockResolvedValue(null);
 
-      await expect(feedbackHelper.deleteFeedback("123e4567-e89b-12d3-a456-426614174000")).rejects.toThrow(
-        new HttpException(HttpStatus.NOT_FOUND, "Feedback not found"),
-      );
+      await expect(
+        feedbackHelper.deleteFeedback("123e4567-e89b-12d3-a456-426614174000")
+      ).rejects.toThrow(new HttpException(HttpStatus.NOT_FOUND, "Feedback not found"));
     });
   });
 });

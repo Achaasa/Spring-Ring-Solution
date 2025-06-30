@@ -28,7 +28,7 @@ describe("Payment Helper", () => {
   const mockPayment: Partial<Payment> = {
     id: "1",
     bookingId: "booking1",
-    amount: 1000,
+  
     status: "PENDING",
   };
 
@@ -41,6 +41,7 @@ describe("Payment Helper", () => {
       name: "Test Service",
     },
     status: "ACCEPTED",
+    price: 1000,
   };
 
   beforeEach(() => {
@@ -60,7 +61,7 @@ describe("Payment Helper", () => {
 
       const result = await paymentHelper.initializePayment(
         mockBooking.id,
-        1000,
+        
       );
       expect(result).toHaveProperty("authorizationUrl");
       expect(result).toHaveProperty("paymentId");
@@ -70,7 +71,7 @@ describe("Payment Helper", () => {
       (prisma.booking.findUnique as jest.Mock).mockResolvedValue(null);
 
       await expect(
-        paymentHelper.initializePayment("nonexistent", 1000),
+        paymentHelper.initializePayment("nonexistent", ),
       ).rejects.toThrow(HttpException);
     });
   });
