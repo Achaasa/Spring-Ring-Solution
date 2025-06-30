@@ -7,7 +7,7 @@ import paystack from "../utils/paystack";
 import { formatPrismaError } from "../utils/formatPrisma";
 import { paymentSchema, updatePaymentSchema } from "../zodSchema/paymentSchema";
 
-export const initializePayment = async (bookingId: string, amount: number) => {
+export const initializePayment = async (bookingId: string) => {
   try {
     // Check if the booking exists
     const booking = await prisma.booking.findUnique({
@@ -40,7 +40,10 @@ export const initializePayment = async (bookingId: string, amount: number) => {
         "Payment already exists for this booking.",
       );
     }
-
+    const amount = booking.price;
+    if (!amount || amount <= 0) {
+      throw new HttpException(HttpStatus.BAD_REQUEST, "Invalid booking price.");
+    }
     // Create a Paystack transaction
     const paymentResponse = await paystack.initializeTransaction(
       booking.user.email,
