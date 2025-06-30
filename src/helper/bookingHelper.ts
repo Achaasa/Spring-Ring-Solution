@@ -271,3 +271,20 @@ export const getRejectedBookings = async () => {
     throw formatPrismaError(error);
   }
 };
+
+
+export const getBookingsByUserId = async (userId: string) => {
+  try {
+    const bookings = await prisma.booking.findMany({
+      where: { userId, delFlag: false },
+      include: {
+        user: true,
+        service: true,
+        admin: true,
+      },
+    });
+    return bookings;
+  } catch (error) {
+    throw formatPrismaError(error);
+  }
+};

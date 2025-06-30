@@ -11,6 +11,7 @@ import {
   getPendingBookingsHandler,
   getApprovedBookingsHandler,
   getRejectedBookingsHandler,
+  getBookingByUserIdHandler,
 } from "../controller/bookingController";
 import { authenticateJWT, authorizeRole } from "../utils/jsonwebtoken";
 
@@ -23,26 +24,30 @@ bookingRouter.use(authenticateJWT);
 bookingRouter.post("/add", createBookingHandler);
 
 // Get all bookings
-bookingRouter.get("/get", getBookingsHandler);
+authorizeRole(["ADMIN", "SUPER_ADMIN"]),
+  bookingRouter.get("/get", getBookingsHandler);
 
 // Get booking by ID
-bookingRouter.get("/get/:bookingId", getBookingByIdHandler);
+authorizeRole(["ADMIN", "SUPER_ADMIN"]),
+  bookingRouter.get("/get/:bookingId", getBookingByIdHandler);
 
 // Update booking
-bookingRouter.put("/update/:bookingId", updateBookingHandler);
+authorizeRole(["ADMIN", "SUPER_ADMIN"]),
+  bookingRouter.put("/update/:bookingId", updateBookingHandler);
 
 // Delete booking
-bookingRouter.put("/delete/:bookingId", deleteBookingHandler);
+authorizeRole(["ADMIN", "SUPER_ADMIN"]),
+  bookingRouter.put("/delete/:bookingId", deleteBookingHandler);
 
 // Admin routes for booking management
 bookingRouter.post(
   "/update/:bookingId/approve",
-  authorizeRole(["ADMIN"]),
+  authorizeRole(["ADMIN", "SUPER_ADMIN"]),
   approveBookingHandler,
 );
 bookingRouter.post(
   "/update/:bookingId/reject",
-  authorizeRole(["ADMIN"]),
+  authorizeRole(["ADMIN", "SUPER_ADMIN"]),
   rejectBookingHandler,
 );
 
@@ -50,5 +55,10 @@ bookingRouter.post(
 bookingRouter.get("/status/pending", getPendingBookingsHandler);
 bookingRouter.get("/status/approved", getApprovedBookingsHandler);
 bookingRouter.get("/status/rejected", getRejectedBookingsHandler);
-
+// get bookings by user
+bookingRouter.get(
+  "/get/user/",
+  authorizeRole(["USER", "ADMIN", "SUPER_ADMIN"]),
+  getBookingByUserIdHandler,
+);
 export default bookingRouter;

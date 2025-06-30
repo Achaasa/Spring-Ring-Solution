@@ -27,7 +27,12 @@ userRouter.post(
 );
 
 // Get all users
-userRouter.get("/get", authenticateJWT, authorizeRole(["ADMIN"]), getAllUsers); // Only accessible by SuperAdmin
+userRouter.get(
+  "/get",
+  authenticateJWT,
+  authorizeRole(["ADMIN", "SUPER_ADMIN",]),
+  getAllUsers,
+); // Only accessible by SuperAdmin
 
 // Get user by email
 userRouter.get(

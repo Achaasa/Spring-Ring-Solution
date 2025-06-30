@@ -7,10 +7,10 @@
   },
   "servers": [
     {
-      "url": "http://localhost:4500",
+      "url": "http://localhost:4500/api",
       "description": "Development server"
     },{
-      "url": "https://spring-ring-solution.onrender.com",
+      "url": "https://spring-ring-solution.onrender.com/api",
       "description": "Production server"
     }
   ],
@@ -560,6 +560,25 @@
           },
           "404": {
             "description": "Booking not found"
+          }
+        }
+      }
+    },
+    "/bookings/get/user": {
+      "get": {
+        "tags": ["Bookings"],
+        "summary": "Get all bookings for user",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of bookings retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
