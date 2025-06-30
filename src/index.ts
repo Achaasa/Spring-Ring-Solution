@@ -33,6 +33,7 @@ app.use(
       "https://spring-ring-bloom-ui.vercel.app",
       "https://spring-ring-solution.onrender.com",
       "https://spring-ring-solution.onrender.com/api",
+      "https://localhost:8080",
     ],
     credentials: true,
   }),
