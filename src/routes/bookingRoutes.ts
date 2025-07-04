@@ -12,6 +12,7 @@ import {
   getApprovedBookingsHandler,
   getRejectedBookingsHandler,
   getBookingByUserIdHandler,
+  addPriceToBookingHandler,
 } from "../controller/bookingController";
 import { authenticateJWT, authorizeRole } from "../utils/jsonwebtoken";
 
@@ -24,20 +25,41 @@ bookingRouter.use(authenticateJWT);
 bookingRouter.post("/add", createBookingHandler);
 
 // Get all bookings
-authorizeRole(["ADMIN", "SUPER_ADMIN"]),
-  bookingRouter.get("/get", getBookingsHandler);
+
+bookingRouter.get(
+  "/get",
+  authorizeRole(["ADMIN", "SUPER_ADMIN"]),
+  getBookingsHandler,
+);
 
 // Get booking by ID
-authorizeRole(["ADMIN", "SUPER_ADMIN"]),
-  bookingRouter.get("/get/:bookingId", getBookingByIdHandler);
+
+bookingRouter.get(
+  "/get/:bookingId",
+  authorizeRole(["ADMIN", "SUPER_ADMIN"]),
+  getBookingByIdHandler,
+);
 
 // Update booking
-authorizeRole(["ADMIN", "SUPER_ADMIN"]),
-  bookingRouter.put("/update/:bookingId", updateBookingHandler);
 
+bookingRouter.put(
+  "/update/:bookingId",
+  authorizeRole(["ADMIN", "SUPER_ADMIN", "USER"]),
+  updateBookingHandler,
+);
+// Add price to booking
+bookingRouter.put(
+  "/add-price/:bookingId/",
+  authorizeRole(["ADMIN", "SUPER_ADMIN"]),
+  addPriceToBookingHandler,
+);
 // Delete booking
-authorizeRole(["ADMIN", "SUPER_ADMIN"]),
-  bookingRouter.put("/delete/:bookingId", deleteBookingHandler);
+
+bookingRouter.put(
+  "/delete/:bookingId",
+  authorizeRole(["ADMIN", "SUPER_ADMIN"]),
+  deleteBookingHandler,
+);
 
 // Admin routes for booking management
 bookingRouter.post(

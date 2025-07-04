@@ -111,6 +111,10 @@
           "serviceId": {
             "type": "string"
           },
+          "price": {
+            "type": "number",
+            "format": "float"
+          },
           "status": {
             "type": "string",
             "enum": ["PENDING", "ACCEPTED", "REJECTED"]
@@ -614,6 +618,57 @@
         "responses": {
           "200": {
             "description": "Booking updated successfully"
+          },
+          "404": {
+            "description": "Booking not found"
+          }
+        }
+      }
+    },
+    "/bookings/add-price/{bookingId}": {
+      "put": {
+        "tags": ["Bookings"],
+        "summary": "Add price to a booking",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "bookingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the booking to update"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "price": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "The price to set for the booking"
+                  }
+                },
+                "required": ["price"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Booking updated successfully"
+          },
+          "400": {
+            "description": "Invalid price or booking status"
           },
           "404": {
             "description": "Booking not found"

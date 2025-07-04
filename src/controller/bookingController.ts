@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import {
   createBooking,
   getBookings,
@@ -15,6 +15,7 @@ import {
 import { createBookingNotification } from "../services/notificationService";
 import { HttpStatus } from "../utils/http-status";
 import { formatPrismaError } from "../utils/formatPrisma";
+import HttpException from "../utils/http-error";
 
 export const createBookingHandler = async (req: Request, res: Response) => {
   try {
@@ -141,7 +142,7 @@ export const getRejectedBookingsHandler = async (
 export const getBookingByUserIdHandler = async (
   req: Request,
   res: Response,
-) => {  
+) => {
   try {
     const userId = req.user.id; // Assuming user ID is in the request object
     const bookings = await getBookingsByUserId(userId);
@@ -149,6 +150,29 @@ export const getBookingByUserIdHandler = async (
   } catch (error) {
     const err = formatPrismaError(error);
     res.status(err.status).json({ message: err.message });
-    
   }
-}
+};
+
+export const addPriceToBookingHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { bookingId } = req.params;
+    const { price } = req.body;
+
+    // Validate price
+    if (typeof price !== "number" || price <= 0) {
+      throw new HttpException(HttpStatus.BAD_REQUEST, "Invalid price");
+    }
+
+    // Update booking with price
+    const updatedBooking = await updateBooking(bookingId, { price });
+
+    res.status(HttpStatus.OK).json(updatedBooking);
+  } catch (error) {
+    const err = formatPrismaError(error);
+    res.status(err.status).json({ message: err.message });
+  }
+};
