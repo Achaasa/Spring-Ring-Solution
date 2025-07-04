@@ -56,7 +56,7 @@ export const deleteServiceHandler = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     await deleteService(id);
-    res.status(HttpStatus.NO_CONTENT).send();
+    res.status(HttpStatus.OK).send("deleted successfully");
   } catch (error) {
     const err = formatPrismaError(error);
     res.status(err.status).json({ message: err.message });

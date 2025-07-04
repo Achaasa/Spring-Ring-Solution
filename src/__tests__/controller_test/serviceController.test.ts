@@ -167,7 +167,8 @@ describe("Service Controller", () => {
 
       await deleteServiceHandler(mockRequest, mockResponse);
 
-      expect(mockResponse._getStatusCode()).toBe(HttpStatus.NO_CONTENT);
+      expect(mockResponse._getStatusCode()).toBe(HttpStatus.OK);
+      expect(mockResponse._getData()).toBe("deleted successfully");
     });
 
     it("should handle deletion errors", async () => {
