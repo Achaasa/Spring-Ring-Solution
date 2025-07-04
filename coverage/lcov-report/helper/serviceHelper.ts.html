@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">84.21% </span>
+                <span class="strong">86.66% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>48/57</span>
+                <span class='fraction'>52/60</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">40% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>2/5</span>
+                <span class='fraction'>3/6</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">81.25% </span>
+                <span class="strong">84.31% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>39/48</span>
+                <span class='fraction'>43/51</span>
             </div>
         
             
@@ -152,7 +152,19 @@
 <a name='L87'></a><a href='#L87'>87</a>
 <a name='L88'></a><a href='#L88'>88</a>
 <a name='L89'></a><a href='#L89'>89</a>
-<a name='L90'></a><a href='#L90'>90</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -160,27 +172,37 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -215,6 +237,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -257,19 +281,29 @@ export const createService = async (serviceData: Service) =&gt; {
       );
 <span class="cstat-no" title="statement not covered" >      throw new HttpException(HttpStatus.BAD_REQUEST, errors.join(". "));</span>
     }
-&nbsp;
+    const existingService = await prisma.service.findFirst({
+      where: { name: serviceData.name, type: serviceData.type, delFlag: false },
+    });
+    if (existingService) {
+      throw new HttpException(
+        HttpStatus.BAD_REQUEST,
+        "Service with this name and type already exists.",
+      );
+    }
     const newService = await prisma.service.create({
       data: serviceData,
     });
     return newService;
   } catch (error) {
-<span class="cstat-no" title="statement not covered" >    throw formatPrismaError(error);</span>
+    throw formatPrismaError(error);
   }
 };
 &nbsp;
 export const getServices = async () =&gt; {
   try {
-    const services = await prisma.service.findMany();
+    const services = await prisma.service.findMany({
+      where: { delFlag: false },
+    });
     return services;
   } catch (error) {
 <span class="cstat-no" title="statement not covered" >    throw formatPrismaError(error);</span>
@@ -279,7 +313,7 @@ export const getServices = async () =&gt; {
 export const getServiceById = async (id: string) =&gt; {
   try {
     const service = await prisma.service.findUnique({
-      where: { id },
+      where: { id, delFlag: false },
     });
     if (!service) {
       throw new HttpException(HttpStatus.NOT_FOUND, "Service not found.");
@@ -303,7 +337,9 @@ export const updateService = async (
 <span class="cstat-no" title="statement not covered" >      throw new HttpException(HttpStatus.BAD_REQUEST, errors.join(". "));</span>
     }
 &nbsp;
-    const findService = await prisma.service.findUnique({ where: { id } });
+    const findService = await prisma.service.findUnique({
+      where: { id, delFlag: false },
+    });
     if (!findService) {
       throw new HttpException(HttpStatus.NOT_FOUND, "Service not found");
     }
@@ -325,7 +361,7 @@ export const deleteService = async (id: string) =&gt; {
 <span class="cstat-no" title="statement not covered" >      throw new HttpException(HttpStatus.NOT_FOUND, "Service does not exist");</span>
     }
 &nbsp;
-    await prisma.service.delete({ where: { id } });
+    await prisma.service.update({ where: { id }, data: { delFlag: true } });
   } catch (error) {
     throw formatPrismaError(error);
   }
@@ -337,7 +373,7 @@ export const deleteService = async (id: string) =&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-30T16:00:40.258Z
+                at 2025-07-04T07:15:36.864Z
             </div>
         <script src="../prettify.js"></script>
         <script>

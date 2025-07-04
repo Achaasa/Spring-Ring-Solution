@@ -37,7 +37,7 @@ serviceRouter.put(
 );
 
 // Delete service
-serviceRouter.delete(
+serviceRouter.put(
   "/delete/:id",
   authorizeRole(["ADMIN","SUPER_ADMIN"]),
   deleteServiceHandler,

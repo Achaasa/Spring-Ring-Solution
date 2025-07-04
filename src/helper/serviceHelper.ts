@@ -14,7 +14,15 @@ export const createService = async (serviceData: Service) => {
       );
       throw new HttpException(HttpStatus.BAD_REQUEST, errors.join(". "));
     }
-
+    const existingService = await prisma.service.findFirst({
+      where: { name: serviceData.name, type: serviceData.type, delFlag: false },
+    });
+    if (existingService) {
+      throw new HttpException(
+        HttpStatus.BAD_REQUEST,
+        "Service with this name and type already exists.",
+      );
+    }
     const newService = await prisma.service.create({
       data: serviceData,
     });
@@ -26,7 +34,9 @@ export const createService = async (serviceData: Service) => {
 
 export const getServices = async () => {
   try {
-    const services = await prisma.service.findMany();
+    const services = await prisma.service.findMany({
+      where: { delFlag: false },
+    });
     return services;
   } catch (error) {
     throw formatPrismaError(error);
@@ -36,7 +46,7 @@ export const getServices = async () => {
 export const getServiceById = async (id: string) => {
   try {
     const service = await prisma.service.findUnique({
-      where: { id },
+      where: { id, delFlag: false },
     });
     if (!service) {
       throw new HttpException(HttpStatus.NOT_FOUND, "Service not found.");
@@ -60,7 +70,9 @@ export const updateService = async (
       throw new HttpException(HttpStatus.BAD_REQUEST, errors.join(". "));
     }
 
-    const findService = await prisma.service.findUnique({ where: { id } });
+    const findService = await prisma.service.findUnique({
+      where: { id, delFlag: false },
+    });
     if (!findService) {
       throw new HttpException(HttpStatus.NOT_FOUND, "Service not found");
     }
@@ -82,7 +94,7 @@ export const deleteService = async (id: string) => {
       throw new HttpException(HttpStatus.NOT_FOUND, "Service does not exist");
     }
 
-    await prisma.service.delete({ where: { id } });
+    await prisma.service.update({ where: { id }, data: { delFlag: true } });
   } catch (error) {
     throw formatPrismaError(error);
   }

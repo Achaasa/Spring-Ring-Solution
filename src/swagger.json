@@ -436,7 +436,7 @@
       }
     },
     "/services/delete/{id}": {
-      "delete": {
+      "put": {
         "tags": ["Services"],
         "summary": "Delete service",
         "security": [
