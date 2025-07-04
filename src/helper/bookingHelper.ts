@@ -30,13 +30,12 @@ export const createBooking = async (bookingData: Booking) => {
     if (!service) {
       throw new HttpException(HttpStatus.NOT_FOUND, "Service not found");
     }
-
+    const { price, ...restOfBooking } = bookingData;
     const newBooking = await prisma.booking.create({
-      data: bookingData,
+      data: restOfBooking,
       include: {
         user: true,
         service: true,
-        
       },
     });
 
@@ -51,7 +50,8 @@ export const createBooking = async (bookingData: Booking) => {
 
 export const getBookings = async () => {
   try {
-    const bookings = await prisma.booking.findMany({where: {delFlag: false},
+    const bookings = await prisma.booking.findMany({
+      where: { delFlag: false },
       include: {
         user: true,
         service: true,
@@ -67,7 +67,7 @@ export const getBookings = async () => {
 export const getBookingById = async (id: string) => {
   try {
     const booking = await prisma.booking.findUnique({
-      where: { id ,delFlag: false},
+      where: { id, delFlag: false },
       include: {
         user: true,
         service: true,
@@ -99,14 +99,17 @@ export const updateBooking = async (
       throw new HttpException(HttpStatus.BAD_REQUEST, errors.join(". "));
     }
 
-    const findBooking = await prisma.booking.findUnique({ where: { id,delFlag:false } });
+    const findBooking = await prisma.booking.findUnique({
+      where: { id, delFlag: false },
+    });
     if (!findBooking) {
       throw new HttpException(HttpStatus.NOT_FOUND, "Booking not found");
     }
+    const { price, ...restOfBooking } = bookingData;
 
     const updatedBooking = await prisma.booking.update({
       where: { id },
-      data: bookingData,
+      data: restOfBooking,
       include: {
         user: true,
         service: true,
@@ -126,7 +129,7 @@ export const deleteBooking = async (id: string) => {
       throw new HttpException(HttpStatus.NOT_FOUND, "Booking not found");
     }
 
-    await prisma.booking.update({ where: { id },data: { delFlag: true } });
+    await prisma.booking.update({ where: { id }, data: { delFlag: true } });
   } catch (error) {
     throw formatPrismaError(error);
   }
@@ -134,16 +137,15 @@ export const deleteBooking = async (id: string) => {
 
 export const approveBooking = async (id: string, adminId: string) => {
   try {
-
     const booking = await prisma.booking.findUnique({
-      where: { id ,delFlag: false },
+      where: { id, delFlag: false },
     });
     if (!booking) {
       throw new HttpException(HttpStatus.NOT_FOUND, "Booking not found");
     }
     if (!adminId) {
-  throw new HttpException(HttpStatus.BAD_REQUEST, "Admin ID is required");
-}
+      throw new HttpException(HttpStatus.BAD_REQUEST, "Admin ID is required");
+    }
 
     const admin = await prisma.user.findUnique({
       where: { id: adminId },
@@ -188,9 +190,9 @@ export const rejectBooking = async (id: string, adminId: string) => {
     if (!booking) {
       throw new HttpException(HttpStatus.NOT_FOUND, "Booking not found");
     }
-if (!adminId) {
-  throw new HttpException(HttpStatus.BAD_REQUEST, "Admin ID is required");
-}
+    if (!adminId) {
+      throw new HttpException(HttpStatus.BAD_REQUEST, "Admin ID is required");
+    }
     // Check if admin exists
     const admin = await prisma.user.findUnique({
       where: { id: adminId },
@@ -222,7 +224,8 @@ export const getPendingBookings = async () => {
   try {
     const bookings = await prisma.booking.findMany({
       where: {
-        status: "PENDING",delFlag: false
+        status: "PENDING",
+        delFlag: false,
       },
       include: {
         user: true,
@@ -240,7 +243,8 @@ export const getApprovedBookings = async () => {
   try {
     const bookings = await prisma.booking.findMany({
       where: {
-        status: "ACCEPTED",delFlag: false
+        status: "ACCEPTED",
+        delFlag: false,
       },
       include: {
         user: true,
@@ -258,7 +262,8 @@ export const getRejectedBookings = async () => {
   try {
     const bookings = await prisma.booking.findMany({
       where: {
-        status: "REJECTED",delFlag: false
+        status: "REJECTED",
+        delFlag: false,
       },
       include: {
         user: true,
@@ -272,7 +277,6 @@ export const getRejectedBookings = async () => {
   }
 };
 
-
 export const getBookingsByUserId = async (userId: string) => {
   try {
     const bookings = await prisma.booking.findMany({
@@ -284,6 +288,34 @@ export const getBookingsByUserId = async (userId: string) => {
       },
     });
     return bookings;
+  } catch (error) {
+    throw formatPrismaError(error);
+  }
+};
+
+export const addPriceToBooking = async (bookingId: string, price: number) => {
+  try {
+    const booking = await prisma.booking.findUnique({
+      where: { id: bookingId, delFlag: false },
+    });
+    if (!booking) {
+      throw new HttpException(HttpStatus.NOT_FOUND, "Booking not found");
+    }
+    if(booking.status !== "ACCEPTED") {
+      throw new HttpException(HttpStatus.BAD_REQUEST, "Booking must be accepted to add price");
+    }
+
+    const updatedBooking = await prisma.booking.update({
+      where: { id: bookingId },
+      data: { price },
+      include: {
+        user: true,
+        service: true,
+        admin: true,
+      },
+    });
+
+    return updatedBooking;
   } catch (error) {
     throw formatPrismaError(error);
   }
