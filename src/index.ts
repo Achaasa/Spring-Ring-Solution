@@ -10,6 +10,7 @@ import HttpException from "./utils/http-error";
 import { HttpStatus } from "./utils/http-status";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger.json";
+import redisClient from "./utils/redisClient";
 // import * as swaggerDocs from './swagger.json'
 dotenv.config();
 
@@ -82,5 +83,6 @@ const startServer = async () => {
     await prisma.$disconnect(); // Ensure Prisma client disconnects
   }
 };
+
 
 startServer(); // Start the server

@@ -52,7 +52,6 @@ model Service {
   updatedAt   DateTime    @updatedAt
   type        ServiceType
   delFlag     Boolean     @default(false)
- 
 }
 
 model Booking {
@@ -73,10 +72,16 @@ model Booking {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  payment  Payment?
-  Feedback Feedback?
-  delFlag  Boolean   @default(false)
-   price       Float?
+  payment       Payment?
+  Feedback      Feedback?
+  delFlag       Boolean       @default(false)
+  price         Float?
+  location      String
+  subscription  Subscription?
+  startTime     DateTime
+  addtionalNote String?
+  renewalDay    Int?
+  
 }
 
 model Payment {
@@ -143,4 +148,10 @@ enum ServiceType {
   SECURITY
   CLEANING
   COMBINED
+}
+
+enum Subscription {
+  MONTHLY
+  WEEKLY
+  YEARLY
 }

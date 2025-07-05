@@ -71,7 +71,7 @@ userRouter.delete(
 );
 
 // User login
-userRouter.post("/login", validatePayload("User"), userLogIn);
+userRouter.post("/login",  userLogIn);
 
 // Get user profile
 userRouter.get("/profile", authenticateJWT, getUserProfile);

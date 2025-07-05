@@ -6,7 +6,7 @@ import cloudinary from "../utils/cloudinary";
 import * as userHelper from "../helper/userHelper"; // Assuming you have similar helper methods for users
 import { User } from "@prisma/client";
 import { compare } from "../utils/bcrypt";
-import { setInvalidToken, signToken, UserPayload } from "../utils/jsonwebtoken";
+import { setInvalidToken, signToken, UserPayload, addToBlacklist } from "../utils/jsonwebtoken";
 import { jwtDecode } from "jwt-decode";
 import prisma from "../utils/prisma";
 import { formatPrismaError } from "../utils/formatPrisma";
@@ -153,73 +153,93 @@ export const userLogIn = async (
 ): Promise<void> => {
   try {
     const { email, password } = req.body;
+
     const authHeader = req.header("Authorization");
     console.log("Authorization header:", authHeader);
-    const token = authHeader?.split(" ")[1]?.trim();
-    // Extract token from Authorization header
 
-    if (token) {
+    const token =
+      authHeader?.startsWith("Bearer ") && authHeader.split(" ")[1]?.trim();
+
+    const isTokenValid =
+      token && token !== "null" && token !== "undefined" && token.length > 10;
+
+    // Token-based login flow
+    if (isTokenValid) {
       try {
-        // Decode and validate token
-        const decoded = jwtDecode<UserPayload & { exp: number }>(token);
-
+        const decoded = jwtDecode<UserPayload & { exp: number }>(token!);
         const currentTime = Date.now() / 1000;
+
         if (decoded.exp && decoded.exp > currentTime) {
-          // Token is valid, proceed to fetch user
           const user = await userHelper.getUserById(decoded.id);
           if (user) {
-            // Token is valid, send successful response
             res.status(HttpStatus.OK).json({
               message: "success logging in",
               userId: user.id,
               token,
             });
+            return;
           } else {
-            // Token is valid but user does not exist anymore
-            throw new HttpException(HttpStatus.NOT_FOUND, "user not found");
+            res.status(HttpStatus.NOT_FOUND).json({
+              message: "User not found",
+            });
+            return;
           }
         } else {
-          // Token has expired
           res.status(HttpStatus.UNAUTHORIZED).json({
             message: "Token expired. Please log in again.",
           });
+          return;
         }
       } catch (err) {
-        console.error("Invalid or expired token: ", err);
+        console.error("Invalid or expired token:", err);
         res.status(HttpStatus.UNAUTHORIZED).json({
           message: "Invalid or expired token. Please log in again.",
         });
+        return;
       }
     }
 
-    // If token is not provided or is invalid, attempt to log in with email and password
-    const user = await userHelper.getUserByEmail(email);
-    if (!user) {
-      throw new HttpException(HttpStatus.NOT_FOUND, "user not found");
+    // Fallback: Email/password login
+    if (!email || !password) {
+      res.status(HttpStatus.BAD_REQUEST).json({
+        message: "Email and password are required",
+      });
+      return;
     }
 
-    // Verify password match
+    const user = await userHelper.getUserByEmail(email);
+    if (!user || !user.password) {
+      res.status(HttpStatus.UNAUTHORIZED).json({
+        message: "Invalid credentials",
+      });
+      return;
+    }
+
     const isMatch = await compare(password, user.password);
     if (!isMatch) {
-      throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+      res.status(HttpStatus.UNAUTHORIZED).json({
+        message: "Invalid credentials",
+      });
+      return;
     }
 
-    // Generate a new JWT token for the user
-    console.log("Login - user ID:", user.id);
     const newToken = signToken({
       id: user.id,
       role: user.role,
+     issuedAt:  Date.now(), // Set issuedAt to current time
     });
 
-    // Successful login, return the user ID and new token
     res.status(HttpStatus.OK).json({
       userId: user.id,
       message: "login successful",
       token: newToken,
     });
+    return;
   } catch (error) {
-    const err = formatPrismaError(error); // Ensure this function is used
+    console.error("Login error:", error);
+    const err = formatPrismaError(error);
     res.status(err.status).json({ message: err.message });
+    return;
   }
 };
 
@@ -253,14 +273,18 @@ export const logout = async (
   next: NextFunction,
 ) => {
   try {
-    setInvalidToken();
+    const authHeader = req.header("Authorization");
+    const token = authHeader?.split(" ")[1];
+    if (token) {
+      const decoded: any = jwtDecode(token);
+      await addToBlacklist(token, decoded.exp); // Pass token and its exp
+    }
     res.status(HttpStatus.OK).json({ message: "Logout successful" });
   } catch (error) {
-    const err = formatPrismaError(error); // Ensure this function is used
+    const err = formatPrismaError(error);
     res.status(err.status).json({ message: err.message });
   }
 };
-
 
 export const resetUserPassword = async (
   req: Request,
