@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('USER', 'ADMIN');
+CREATE TYPE "Role" AS ENUM ('USER', 'ADMIN', 'SUPER_ADMIN');
 
 -- CreateEnum
 CREATE TYPE "BookingStatus" AS ENUM ('PENDING', 'ACCEPTED', 'REJECTED');
@@ -11,7 +11,10 @@ CREATE TYPE "PaymentStatus" AS ENUM ('SUCCESS', 'FAILED', 'PENDING', 'REFUNDED')
 CREATE TYPE "UserStatus" AS ENUM ('BANNED', 'DELETED', 'ACTIVE');
 
 -- CreateEnum
-CREATE TYPE "ServiceType" AS ENUM ('SECURITY', 'CLEANING');
+CREATE TYPE "ServiceType" AS ENUM ('SECURITY', 'CLEANING', 'COMBINED');
+
+-- CreateEnum
+CREATE TYPE "Subscription" AS ENUM ('MONTHLY', 'WEEKLY', 'YEARLY');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -26,6 +29,8 @@ CREATE TABLE "User" (
     "imageKey" TEXT NOT NULL,
     "imageUrl" TEXT NOT NULL,
     "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
+    "changedPassword" BOOLEAN NOT NULL DEFAULT true,
+    "delFlag" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -38,6 +43,7 @@ CREATE TABLE "Service" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "type" "ServiceType" NOT NULL,
+    "delFlag" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Service_pkey" PRIMARY KEY ("id")
 );
@@ -51,6 +57,13 @@ CREATE TABLE "Booking" (
     "status" "BookingStatus" NOT NULL DEFAULT 'PENDING',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "delFlag" BOOLEAN NOT NULL DEFAULT false,
+    "price" DOUBLE PRECISION,
+    "location" TEXT NOT NULL,
+    "subscription" "Subscription",
+    "startTime" TIMESTAMP(3) NOT NULL,
+    "addtionalNote" TEXT,
+    "renewalDay" INTEGER,
 
     CONSTRAINT "Booking_pkey" PRIMARY KEY ("id")
 );
@@ -72,8 +85,10 @@ CREATE TABLE "Feedback" (
     "userId" TEXT NOT NULL,
     "message" TEXT NOT NULL,
     "rating" INTEGER NOT NULL DEFAULT 0,
+    "bookingId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "delFlag" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Feedback_pkey" PRIMARY KEY ("id")
 );
@@ -88,6 +103,7 @@ CREATE TABLE "Notification" (
     "type" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "delFlag" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Notification_pkey" PRIMARY KEY ("id")
 );
@@ -97,6 +113,9 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Payment_bookingId_key" ON "Payment"("bookingId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Feedback_bookingId_key" ON "Feedback"("bookingId");
 
 -- AddForeignKey
 ALTER TABLE "Booking" ADD CONSTRAINT "Booking_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -112,6 +131,9 @@ ALTER TABLE "Payment" ADD CONSTRAINT "Payment_bookingId_fkey" FOREIGN KEY ("book
 
 -- AddForeignKey
 ALTER TABLE "Feedback" ADD CONSTRAINT "Feedback_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Feedback" ADD CONSTRAINT "Feedback_bookingId_fkey" FOREIGN KEY ("bookingId") REFERENCES "Booking"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Notification" ADD CONSTRAINT "Notification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

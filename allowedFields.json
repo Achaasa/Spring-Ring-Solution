@@ -73,7 +73,12 @@
       "payment",
       "Feedback",
       "delFlag",
-      "price"
+      "price",
+      "location",
+      "subscription",
+      "startTime",
+      "addtionalNote",
+      "renewalDay"
     ]
   },
   {
@@ -152,6 +157,14 @@
       "SECURITY",
       "CLEANING",
       "COMBINED"
+    ]
+  },
+  {
+    "modelName": "Subscription",
+    "fields": [
+      "MONTHLY",
+      "WEEKLY",
+      "YEARLY"
     ]
   }
 ]
