@@ -11,6 +11,7 @@ import {
   getApprovedBookings,
   getRejectedBookings,
   getBookingsByUserId,
+  addPriceToBooking,
 } from "../helper/bookingHelper";
 import { createBookingNotification } from "../services/notificationService";
 import { HttpStatus } from "../utils/http-status";
@@ -168,7 +169,7 @@ export const addPriceToBookingHandler = async (
     }
 
     // Update booking with price
-    const updatedBooking = await updateBooking(bookingId, { price });
+    const updatedBooking = await addPriceToBooking(bookingId,  price );
 
     res.status(HttpStatus.OK).json(updatedBooking);
   } catch (error) {
