@@ -9,7 +9,8 @@
     {
       "url": "http://localhost:4500/api",
       "description": "Development server"
-    },{
+    },
+    {
       "url": "https://spring-ring-solution.onrender.com/api",
       "description": "Production server"
     }
@@ -115,12 +116,29 @@
             "type": "number",
             "format": "float"
           },
+          "location": { "type": "string" },
           "status": {
             "type": "string",
             "enum": ["PENDING", "ACCEPTED", "REJECTED"]
-          }
+          },
+          "subscription": {
+            "type": "string",
+            "enum": ["MONTHLY", "WEEKLY", "YEARLY"]
+          },
+          "startTime":{
+            "type": "string",
+            "format": "date-time"
+          },
+      "addtionalNote":{
+        "type": "string"
+      },
+      "renewalDay":{
+        "type": "integer",
+      
+        "description": "Day of the month when the subscription will be renewed"
+      }
         },
-        "required": ["userId", "serviceId"]
+        "required": ["userId", "serviceId", "location", "status", "subscription"]
       },
       "Payment": {
         "type": "object",
@@ -128,7 +146,7 @@
           "bookingId": {
             "type": "string"
           },
-         
+
           "status": {
             "type": "string",
             "enum": ["SUCCESS", "FAILED", "PENDING", "REFUNDED"]
@@ -471,7 +489,7 @@
         }
       }
     },
-   
+
     "/analytics/bookings": {
       "get": {
         "tags": ["Analytics"],
@@ -852,7 +870,7 @@
         }
       }
     },
-   
+
     "/payments/confirm/{reference}": {
       "get": {
         "tags": ["Payments"],
@@ -868,7 +886,7 @@
             "description": "Payment reference to verify"
           }
         ],
-        
+
         "responses": {
           "200": {
             "description": "Payment verified successfully"
@@ -1137,8 +1155,7 @@
         }
       }
     },
-    
-    
+
     "/analytics/users": {
       "get": {
         "tags": ["Analytics"],
