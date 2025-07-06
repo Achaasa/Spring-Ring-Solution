@@ -838,7 +838,7 @@
         }
       }
     },
-    "/payments/initiate": {
+    "/payments/initialize": {
       "post": {
         "tags": ["Payments"],
         "summary": "Initiate a payment for a booking",
