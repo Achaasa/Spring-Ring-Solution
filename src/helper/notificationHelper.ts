@@ -4,6 +4,7 @@ import { HttpStatus } from "../utils/http-status";
 import { Notification } from "@prisma/client";
 import { notificationSchema } from "../zodSchema/notificationSchema";
 import { formatPrismaError } from "../utils/formatPrisma";
+import { userSelectFields } from "../utils/userSelect";
 
 export const createNotification = async (notificationData: Notification) => {
   try {
@@ -27,7 +28,9 @@ export const createNotification = async (notificationData: Notification) => {
     const newNotification = await prisma.notification.create({
       data: notificationData,
       include: {
-        user: true,
+        user: {
+          select: userSelectFields,
+        },
       },
     });
     return newNotification;
@@ -43,7 +46,11 @@ export const getNotifications = async (userId: string) => {
   try {
     const notifications = await prisma.notification.findMany({
       where: { userId },
-      include: { user: true },
+      include: {
+        user: {
+          select: userSelectFields,
+        },
+      },
       orderBy: { createdAt: "desc" },
     });
     return notifications;
@@ -56,7 +63,11 @@ export const getNotificationById = async (id: string) => {
   try {
     const notification = await prisma.notification.findUnique({
       where: { id },
-      include: { user: true },
+      include: {
+        user: {
+          select: userSelectFields,
+        },
+      },
     });
     if (!notification) {
       throw new HttpException(HttpStatus.NOT_FOUND, "Notification not found");
@@ -92,7 +103,11 @@ export const updateNotification = async (
     const updatedNotification = await prisma.notification.update({
       where: { id },
       data: notificationData,
-      include: { user: true },
+      include: {
+        user: {
+          select: userSelectFields,
+        },
+      },
     });
     return updatedNotification;
   } catch (error) {
@@ -127,7 +142,11 @@ export const markNotificationAsRead = async (id: string) => {
     const updatedNotification = await prisma.notification.update({
       where: { id },
       data: { isRead: true },
-      include: { user: true },
+      include: {
+        user: {
+          select: userSelectFields,
+        },
+      },
     });
 
     return updatedNotification;
