@@ -34,7 +34,7 @@ export const initializePayment = async (bookingId: string) => {
       where: { bookingId },
     });
 
-    if (existingPayment) {
+    if (existingPayment && existingPayment.status === 'success') {
       throw new HttpException(
         HttpStatus.BAD_REQUEST,
         "Payment already exists for this booking.",
