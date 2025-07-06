@@ -32,6 +32,8 @@ export const createBookingHandler = async (req: Request, res: Response) => {
 
 export const getBookingsHandler = async (req: Request, res: Response) => {
   try {
+    console.log("getBookingsHandler");
+    console.log(req.user.id);
     const bookings = await getBookings();
     res.status(HttpStatus.OK).json(bookings);
   } catch (error) {
@@ -145,7 +147,7 @@ export const getBookingByUserIdHandler = async (
   res: Response,
 ) => {
   try {
-    const userId = req.user.id; // Assuming user ID is in the request object
+    const userId = req.user.id; 
     const bookings = await getBookingsByUserId(userId);
     res.status(HttpStatus.OK).json(bookings);
   } catch (error) {

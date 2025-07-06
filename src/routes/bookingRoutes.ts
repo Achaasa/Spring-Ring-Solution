@@ -18,45 +18,48 @@ import { authenticateJWT, authorizeRole } from "../utils/jsonwebtoken";
 
 const bookingRouter = Router();
 
-// All booking routes require authentication
-bookingRouter.use(authenticateJWT);
+// Get user's own bookings - requires authentication
+bookingRouter.get("/get/user/", authenticateJWT, getBookingByUserIdHandler);
 
-// Create a new booking
-bookingRouter.post("/add", createBookingHandler);
+// Create a new booking - requires authentication
+bookingRouter.post("/add", authenticateJWT, createBookingHandler);
 
-// Get all bookings
-
+// Get all bookings - requires admin authentication
 bookingRouter.get(
   "/get",
-  authorizeRole(["ADMIN", "SUPER_ADMIN"]),
+  authenticateJWT,
+  authorizeRole(["ADMIN", "SUPER_ADMIN", "USER"]),
   getBookingsHandler,
 );
 
-// Get booking by ID
-
+// Get booking by ID - requires admin authentication
 bookingRouter.get(
   "/get/:bookingId",
+  authenticateJWT,
   authorizeRole(["ADMIN", "SUPER_ADMIN"]),
   getBookingByIdHandler,
 );
 
-// Update booking
-
+// Update booking - requires authentication
 bookingRouter.put(
   "/update/:bookingId",
+  authenticateJWT,
   authorizeRole(["ADMIN", "SUPER_ADMIN", "USER"]),
   updateBookingHandler,
 );
-// Add price to booking
+
+// Add price to booking - requires admin authentication
 bookingRouter.put(
   "/add-price/:bookingId/",
+  authenticateJWT,
   authorizeRole(["ADMIN", "SUPER_ADMIN"]),
   addPriceToBookingHandler,
 );
-// Delete booking
 
+// Delete booking - requires admin authentication
 bookingRouter.put(
   "/delete/:bookingId",
+  authenticateJWT,
   authorizeRole(["ADMIN", "SUPER_ADMIN"]),
   deleteBookingHandler,
 );
@@ -64,23 +67,38 @@ bookingRouter.put(
 // Admin routes for booking management
 bookingRouter.post(
   "/update/:bookingId/approve",
+  authenticateJWT,
   authorizeRole(["ADMIN", "SUPER_ADMIN"]),
   approveBookingHandler,
 );
+
 bookingRouter.post(
   "/update/:bookingId/reject",
+  authenticateJWT,
   authorizeRole(["ADMIN", "SUPER_ADMIN"]),
   rejectBookingHandler,
 );
 
-// Get bookings by status
-bookingRouter.get("/status/pending", getPendingBookingsHandler);
-bookingRouter.get("/status/approved", getApprovedBookingsHandler);
-bookingRouter.get("/status/rejected", getRejectedBookingsHandler);
-// get bookings by user
+// Get bookings by status - requires admin authentication
 bookingRouter.get(
-  "/get/user/",
-  authorizeRole(["USER", "ADMIN", "SUPER_ADMIN"]),
-  getBookingByUserIdHandler,
+  "/status/pending",
+  authenticateJWT,
+  authorizeRole(["ADMIN", "SUPER_ADMIN"]),
+  getPendingBookingsHandler,
 );
+
+bookingRouter.get(
+  "/status/approved",
+  authenticateJWT,
+  authorizeRole(["ADMIN", "SUPER_ADMIN"]),
+  getApprovedBookingsHandler,
+);
+
+bookingRouter.get(
+  "/status/rejected",
+  authenticateJWT,
+  authorizeRole(["ADMIN", "SUPER_ADMIN"]),
+  getRejectedBookingsHandler,
+);
+
 export default bookingRouter;

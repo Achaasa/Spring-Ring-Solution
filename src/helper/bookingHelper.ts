@@ -4,6 +4,7 @@ import HttpException from "../utils/http-error";
 import { HttpStatus } from "../utils/http-status";
 import { bookingSchema, updateBookingSchema } from "../zodSchema/bookingSchema";
 import { formatPrismaError } from "../utils/formatPrisma";
+import { userSelectFields } from "../utils/userSelect";
 
 export const createBooking = async (bookingData: Booking) => {
   try {
@@ -34,7 +35,9 @@ export const createBooking = async (bookingData: Booking) => {
     const newBooking = await prisma.booking.create({
       data: restOfBooking,
       include: {
-        user: true,
+        user: {
+          select: userSelectFields,
+        },
         service: true,
       },
     });
@@ -53,9 +56,13 @@ export const getBookings = async () => {
     const bookings = await prisma.booking.findMany({
       where: { delFlag: false },
       include: {
-        user: true,
+        user: {
+          select: userSelectFields,
+        },
         service: true,
-        admin: true,
+        admin: {
+          select: userSelectFields,
+        },
       },
     });
     return bookings;
@@ -69,9 +76,13 @@ export const getBookingById = async (id: string) => {
     const booking = await prisma.booking.findUnique({
       where: { id, delFlag: false },
       include: {
-        user: true,
+        user: {
+          select: userSelectFields,
+        },
         service: true,
-        admin: true,
+        admin: {
+          select: userSelectFields,
+        },
       },
     });
     if (!booking) {
@@ -111,9 +122,13 @@ export const updateBooking = async (
       where: { id },
       data: restOfBooking,
       include: {
-        user: true,
+        user: {
+          select: userSelectFields,
+        },
         service: true,
-        admin: true,
+        admin: {
+          select: userSelectFields,
+        },
       },
     });
     return updatedBooking;
@@ -161,9 +176,13 @@ export const approveBooking = async (id: string, adminId: string) => {
         adminId,
       },
       include: {
-        user: true,
+        user: {
+          select: userSelectFields,
+        },
         service: true,
-        admin: true,
+        admin: {
+          select: userSelectFields,
+        },
       },
     });
 
@@ -181,9 +200,13 @@ export const rejectBooking = async (id: string, adminId: string) => {
     const booking = await prisma.booking.findUnique({
       where: { id, delFlag: false },
       include: {
-        user: true,
+        user: {
+          select: userSelectFields,
+        },
         service: true,
-        admin: true,
+        admin: {
+          select: userSelectFields,
+        },
       },
     });
 
@@ -208,9 +231,13 @@ export const rejectBooking = async (id: string, adminId: string) => {
         adminId: adminId,
       },
       include: {
-        user: true,
+        user: {
+          select: userSelectFields,
+        },
         service: true,
-        admin: true,
+        admin: {
+          select: userSelectFields,
+        },
       },
     });
 
@@ -228,9 +255,13 @@ export const getPendingBookings = async () => {
         delFlag: false,
       },
       include: {
-        user: true,
+        user: {
+          select: userSelectFields,
+        },
         service: true,
-        admin: true,
+        admin: {
+          select: userSelectFields,
+        },
       },
     });
     return bookings;
@@ -247,9 +278,13 @@ export const getApprovedBookings = async () => {
         delFlag: false,
       },
       include: {
-        user: true,
+        user: {
+          select: userSelectFields,
+        },
         service: true,
-        admin: true,
+        admin: {
+          select: userSelectFields,
+        },
       },
     });
     return bookings;
@@ -266,9 +301,13 @@ export const getRejectedBookings = async () => {
         delFlag: false,
       },
       include: {
-        user: true,
+        user: {
+          select: userSelectFields,
+        },
         service: true,
-        admin: true,
+        admin: {
+          select: userSelectFields,
+        },
       },
     });
     return bookings;
@@ -282,9 +321,13 @@ export const getBookingsByUserId = async (userId: string) => {
     const bookings = await prisma.booking.findMany({
       where: { userId, delFlag: false },
       include: {
-        user: true,
+        user: {
+          select: userSelectFields,
+        },
         service: true,
-        admin: true,
+        admin: {
+          select: userSelectFields,
+        },
       },
     });
     return bookings;
@@ -301,17 +344,24 @@ export const addPriceToBooking = async (bookingId: string, price: number) => {
     if (!booking) {
       throw new HttpException(HttpStatus.NOT_FOUND, "Booking not found");
     }
-    if(booking.status !== "ACCEPTED") {
-      throw new HttpException(HttpStatus.BAD_REQUEST, "Booking must be accepted to add price");
+    if (booking.status !== "ACCEPTED") {
+      throw new HttpException(
+        HttpStatus.BAD_REQUEST,
+        "Booking must be accepted to add price",
+      );
     }
 
     const updatedBooking = await prisma.booking.update({
       where: { id: bookingId },
       data: { price },
       include: {
-        user: true,
+        user: {
+          select: userSelectFields,
+        },
         service: true,
-        admin: true,
+        admin: {
+          select: userSelectFields,
+        },
       },
     });
 
