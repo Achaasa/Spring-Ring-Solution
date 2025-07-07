@@ -79,7 +79,7 @@ model Booking {
   location      String
   subscription  Subscription?
   startTime     DateTime
-  addtionalNote String?
+  additionalNote String?
   renewalDay    Int?
   paymentStatus PaymentStatus @default(PENDING)
 }
