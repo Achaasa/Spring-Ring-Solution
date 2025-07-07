@@ -6,7 +6,7 @@ import { notificationSchema } from "../zodSchema/notificationSchema";
 import { formatPrismaError } from "../utils/formatPrisma";
 import { userSelectFields } from "../utils/userSelect";
 
-export const createNotification = async (notificationData: Notification) => {
+export const createNotification = async (notificationData: Omit<Notification, "id">) => {
   try {
     const validateNotification = notificationSchema.safeParse(notificationData);
     if (!validateNotification.success) {
