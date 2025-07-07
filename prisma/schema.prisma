@@ -81,16 +81,17 @@ model Booking {
   startTime     DateTime
   addtionalNote String?
   renewalDay    Int?
-  
+  paymentStatus PaymentStatus @default(PENDING)
 }
 
 model Payment {
-  id        String        @id @default(uuid())
-  booking   Booking       @relation(fields: [bookingId], references: [id])
-  bookingId String        @unique
+  id        String   @id @default(uuid())
+  booking   Booking  @relation(fields: [bookingId], references: [id])
+  bookingId String   @unique
   amount    Float
-  status    String @default("PENDING")
-  paidAt    DateTime      @default(now())
+  status    String   @default("PENDING")
+  paidAt    DateTime @default(now())
+  method    String?
 }
 
 model Feedback {

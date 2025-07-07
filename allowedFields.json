@@ -78,7 +78,8 @@
       "subscription",
       "startTime",
       "addtionalNote",
-      "renewalDay"
+      "renewalDay",
+      "paymentStatus"
     ]
   },
   {
@@ -88,7 +89,8 @@
       "bookingId",
       "amount",
       "status",
-      "paidAt"
+      "paidAt",
+      "method"
     ]
   },
   {
