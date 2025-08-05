@@ -7,10 +7,14 @@ import {
   deletePaymentHandler,
 } from "../controller/paymentController";
 import { authenticateJWT, authorizeRole } from "../utils/jsonwebtoken";
+import { handlePaystackWebhook } from "../utils/payStackWebhook";
 
 const paymentRouter = Router();
 // Confirm payment with reference
 paymentRouter.post("/confirm", confirmPaymentHandler);
+// webhook
+paymentRouter.post("/webhook", handlePaystackWebhook);
+
 // All payment routes require authentication
 paymentRouter.use(authenticateJWT);
 

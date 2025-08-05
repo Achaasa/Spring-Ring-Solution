@@ -11,13 +11,13 @@ import { validatePayload } from "../middleware/validate-payload";
 
 const serviceRouter = Router();
 
-// All service routes require authentication
-serviceRouter.use(authenticateJWT);
+
 
 // Create a new service
 serviceRouter.post(
   "/add",
   validatePayload("Service"),
+  authenticateJWT,
   authorizeRole(["SUPER_ADMIN","ADMIN"]),
   createServiceHandler,
 );
@@ -31,6 +31,7 @@ serviceRouter.get("/get/:id", getServiceByIdHandler);
 // Update service
 serviceRouter.put(
   "/update/:id",
+  authenticateJWT,
   validatePayload("Service"),
   authorizeRole(["ADMIN","SUPER_ADMIN"]),
   updateServiceHandler,
@@ -39,6 +40,7 @@ serviceRouter.put(
 // Delete service
 serviceRouter.put(
   "/delete/:id",
+  authenticateJWT,
   authorizeRole(["ADMIN","SUPER_ADMIN"]),
   deleteServiceHandler,
 );
