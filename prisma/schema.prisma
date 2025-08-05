@@ -72,16 +72,16 @@ model Booking {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  payment       Payment?
-  Feedback      Feedback?
-  delFlag       Boolean       @default(false)
-  price         Float?
-  location      String
-  subscription  Subscription?
-  startTime     DateTime
+  payment        Payment?
+  Feedback       Feedback?
+  delFlag        Boolean       @default(false)
+  price          Float?
+  location       String
+  subscription   Subscription?
+  startTime      DateTime
   additionalNote String?
-  renewalDay    Int?
-  paymentStatus PaymentStatus @default(PENDING)
+  renewalDay     Int?
+  paymentStatus  PaymentStatus @default(PENDING)
 }
 
 model Payment {
@@ -92,6 +92,7 @@ model Payment {
   status    String   @default("PENDING")
   paidAt    DateTime @default(now())
   method    String?
+  reference String?
 }
 
 model Feedback {
