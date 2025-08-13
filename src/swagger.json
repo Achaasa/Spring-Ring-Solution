@@ -43,6 +43,10 @@
     {
       "name": "Analytics",
       "description": "Analytics endpoints"
+    },
+    {
+      "name": "ServiceImages",
+      "description": "Service images management endpoints"
     }
   ],
   "components": {
@@ -57,6 +61,10 @@
       "User": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the user"
+          },
           "email": {
             "type": "string",
             "format": "email"
@@ -72,7 +80,7 @@
           },
           "role": {
             "type": "string",
-            "enum": ["USER", "ADMIN"]
+            "enum": ["USER", "ADMIN", "SUPER_ADMIN"]
           },
           "imageKey": {
             "type": "string"
@@ -83,6 +91,22 @@
           "status": {
             "type": "string",
             "enum": ["ACTIVE", "BANNED", "DELETED"]
+          },
+          "changedPassword": {
+            "type": "boolean",
+            "default": true
+          },
+          "delFlag": {
+            "type": "boolean",
+            "default": false
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "required": ["email", "password", "name", "phoneNumber"]
@@ -90,6 +114,10 @@
       "Service": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the service"
+          },
           "name": {
             "type": "string"
           },
@@ -98,7 +126,19 @@
           },
           "type": {
             "type": "string",
-            "enum": ["SECURITY", "CLEANING"]
+            "enum": ["SECURITY", "CLEANING", "COMBINED"]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "delFlag": {
+            "type": "boolean",
+            "default": false
           }
         },
         "required": ["name", "type"]
@@ -106,17 +146,27 @@
       "Booking": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the booking"
+          },
           "userId": {
             "type": "string"
           },
           "serviceId": {
             "type": "string"
           },
+          "adminId": {
+            "type": "string",
+            "nullable": true
+          },
           "price": {
             "type": "number",
             "format": "float"
           },
-          "location": { "type": "string" },
+          "location": {
+            "type": "string"
+          },
           "status": {
             "type": "string",
             "enum": ["PENDING", "ACCEPTED", "REJECTED"]
@@ -125,38 +175,81 @@
             "type": "string",
             "enum": ["MONTHLY", "WEEKLY", "YEARLY"]
           },
-          "startTime":{
+          "startTime": {
             "type": "string",
             "format": "date-time"
           },
-      "addtionalNote":{
-        "type": "string"
-      },
-      "renewalDay":{
-        "type": "integer",
-      
-        "description": "Day of the month when the subscription will be renewed"
-      }
+          "additionalNote": {
+            "type": "string"
+          },
+          "renewalDay": {
+            "type": "integer",
+            "description": "Day of the month when the subscription will be renewed"
+          },
+          "paymentStatus": {
+            "type": "string",
+            "enum": ["SUCCESS", "FAILED", "PENDING", "REFUNDED"],
+            "default": "PENDING"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "delFlag": {
+            "type": "boolean",
+            "default": false
+          }
         },
         "required": ["userId", "serviceId", "location", "status", "subscription"]
       },
       "Payment": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the payment"
+          },
           "bookingId": {
             "type": "string"
           },
-
+          "amount": {
+            "type": "number",
+            "format": "float"
+          },
           "status": {
             "type": "string",
-            "enum": ["SUCCESS", "FAILED", "PENDING", "REFUNDED"]
+            "enum": ["SUCCESS", "FAILED", "PENDING", "REFUNDED"],
+            "default": "PENDING"
+          },
+          "paidAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "method": {
+            "type": "string",
+            "nullable": true
+          },
+          "reference": {
+            "type": "string",
+            "nullable": true
           }
         },
-        "required": ["bookingId"]
+        "required": ["bookingId", "amount"]
       },
       "Feedback": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the feedback"
+          },
+          "userId": {
+            "type": "string"
+          },
           "bookingId": {
             "type": "string"
           },
@@ -166,10 +259,93 @@
           "rating": {
             "type": "integer",
             "minimum": 0,
-            "maximum": 5
+            "maximum": 5,
+            "default": 0
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "delFlag": {
+            "type": "boolean",
+            "default": false
           }
         },
-        "required": ["bookingId", "message", "rating"]
+        "required": ["userId", "bookingId", "message", "rating"]
+      },
+      "Notification": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the notification"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "isRead": {
+            "type": "boolean",
+            "default": false
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of notification (e.g., BOOKING, PAYMENT, SYSTEM)"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "delFlag": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": ["userId", "title", "message", "type"]
+      },
+      "ServiceImages": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the service image"
+          },
+          "serviceId": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "imageKey": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "delFlag": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": ["serviceId", "imageUrl", "imageKey"]
       }
     }
   },
@@ -338,9 +514,22 @@
         "requestBody": {
           "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/Service"
+                "type": "object",
+                "properties": {
+                  "photos": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "maxItems": 5
+                  },
+                  "serviceData": {
+                    "$ref": "#/components/schemas/Service"
+                  }
+                }
               }
             }
           }
@@ -353,7 +542,7 @@
             "description": "Unauthorized"
           },
           "403": {
-            "description": "Forbidden - Admin access required"
+            "description": "Forbidden - Admin or Super Admin access required"
           }
         }
       }
@@ -430,9 +619,22 @@
         "requestBody": {
           "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/Service"
+                "type": "object",
+                "properties": {
+                  "photos": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "maxItems": 5
+                  },
+                  "serviceData": {
+                    "$ref": "#/components/schemas/Service"
+                  }
+                }
               }
             }
           }
@@ -445,7 +647,7 @@
             "description": "Unauthorized"
           },
           "403": {
-            "description": "Forbidden - Admin access required"
+            "description": "Forbidden - Admin or Super Admin access required"
           },
           "404": {
             "description": "Service not found"
@@ -481,7 +683,7 @@
             "description": "Unauthorized"
           },
           "403": {
-            "description": "Forbidden - Admin access required"
+            "description": "Forbidden - Admin or Super Admin access required"
           },
           "404": {
             "description": "Service not found"
@@ -489,7 +691,63 @@
         }
       }
     },
-
+    "/services/{serviceId}/images": {
+      "delete": {
+        "tags": ["ServiceImages"],
+        "summary": "Delete service images by IDs",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "serviceId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the service whose images are to be deleted"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "imageIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "description": "Array of image IDs to delete"
+                  }
+                },
+                "required": ["imageIds"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Service images deleted successfully"
+          },
+          "400": {
+            "description": "Invalid input - imageIds must be a non-empty array"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Service or images not found"
+          }
+        }
+      }
+    },
     "/analytics/bookings": {
       "get": {
         "tags": ["Analytics"],
@@ -870,7 +1128,6 @@
         }
       }
     },
-
     "/payments/confirm/{reference}": {
       "get": {
         "tags": ["Payments"],
@@ -886,7 +1143,6 @@
             "description": "Payment reference to verify"
           }
         ],
-
         "responses": {
           "200": {
             "description": "Payment verified successfully"
@@ -946,7 +1202,6 @@
         }
       }
     },
-
     "/feedbacks/add": {
       "post": {
         "tags": ["Feedbacks"],
@@ -1098,7 +1353,7 @@
     "/notifications/get/{userId}": {
       "get": {
         "tags": ["Notifications"],
-        "summary": "Get All notification for user notifications",
+        "summary": "Get all notifications for a user",
         "security": [
           {
             "BearerAuth": []
@@ -1112,7 +1367,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "ID of the feedback to delete"
+            "description": "ID of the user to retrieve notifications for"
           }
         ],
         "responses": {
@@ -1155,7 +1410,6 @@
         }
       }
     },
-
     "/analytics/users": {
       "get": {
         "tags": ["Analytics"],

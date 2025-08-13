@@ -5,6 +5,7 @@ import {
   getServiceByIdHandler,
   updateServiceHandler,
   deleteServiceHandler,
+  deleteServiceImagesHandler,
 } from "../controller/serviceController";
 import { authenticateJWT, authorizeRole } from "../utils/jsonwebtoken";
 import { validatePayload } from "../middleware/validate-payload";
@@ -45,5 +46,5 @@ serviceRouter.put(
   authorizeRole(["ADMIN", "SUPER_ADMIN"]),
   deleteServiceHandler,
 );
-
+serviceRouter.delete("/:serviceId/images", deleteServiceImagesHandler);
 export default serviceRouter;

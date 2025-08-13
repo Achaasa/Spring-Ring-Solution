@@ -85,12 +85,12 @@ export const updateService = async (
     }
 
     const findService = await prisma.service.findUnique({
-      where: { id, delFlag: false },include:{ServiceImages:true},
+      where: { id, delFlag: false },
+      include: { ServiceImages: true },
     });
     if (!findService) {
       throw new HttpException(HttpStatus.NOT_FOUND, "Service not found");
     }
-   
 
     // Handle photos update only if new pictures are provided
     if (pictures.length > 0) {
@@ -141,6 +141,64 @@ export const deleteService = async (id: string) => {
     }
 
     await prisma.service.update({ where: { id }, data: { delFlag: true } });
+  } catch (error) {
+    throw formatPrismaError(error);
+  }
+};
+
+export const deleteServiceImagesByIds = async (
+  serviceId: string,
+  imageIds: string[],
+) => {
+  try {
+    if (!imageIds || imageIds.length === 0) {
+      throw new HttpException(
+        HttpStatus.BAD_REQUEST,
+        "No image IDs provided for deletion.",
+      );
+    }
+
+    // Fetch the images and make sure they belong to the specified service
+    const imagesToDelete = await prisma.serviceImages.findMany({
+      where: {
+        id: { in: imageIds },
+        serviceId: serviceId,
+      },
+    });
+
+    // Check for invalid image IDs (i.e., not found or don't belong to the service)
+    const foundImageIds = imagesToDelete.map((img) => img.id);
+    const invalidIds = imageIds.filter((id) => !foundImageIds.includes(id));
+
+    if (invalidIds.length > 0) {
+      throw new HttpException(
+        HttpStatus.BAD_REQUEST,
+        `The following image IDs are invalid or do not belong to the service: ${invalidIds.join(
+          ", ",
+        )}`,
+      );
+    }
+
+    // Delete images from Cloudinary
+    for (const image of imagesToDelete) {
+      if (image.imageKey) {
+        try {
+          await cloudinary.uploader.destroy(image.imageKey);
+        } catch (err) {
+          console.warn(
+            `Failed to delete image with key ${image.imageKey} from Cloudinary`,
+            err,
+          );
+        }
+      }
+    }
+
+    // Delete from database
+    await prisma.serviceImages.deleteMany({
+      where: { id: { in: imageIds } },
+    });
+
+    return { message: "Selected images deleted successfully." };
   } catch (error) {
     throw formatPrismaError(error);
   }

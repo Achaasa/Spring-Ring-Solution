@@ -5,6 +5,7 @@ import {
   getServiceById,
   updateService,
   deleteService,
+  deleteServiceImagesByIds,
 } from "../helper/serviceHelper";
 import HttpException from "../utils/http-error";
 import { HttpStatus } from "../utils/http-status";
@@ -98,6 +99,27 @@ export const deleteServiceHandler = async (req: Request, res: Response) => {
     const { id } = req.params;
     await deleteService(id);
     res.status(HttpStatus.OK).send("deleted successfully");
+  } catch (error) {
+    const err = formatPrismaError(error);
+    res.status(err.status).json({ message: err.message });
+  }
+};
+
+
+export const deleteServiceImagesHandler = async (req: Request, res: Response) => {
+  const { serviceId } = req.params;
+  const { imageIds } = req.body;
+
+  try {
+    if (!Array.isArray(imageIds) || imageIds.length === 0) {
+      throw new HttpException(
+        HttpStatus.BAD_REQUEST,
+        "You must provide a non-empty array of image IDs."
+      );
+    }
+
+    const result = await deleteServiceImagesByIds(serviceId, imageIds);
+    res.status(HttpStatus.OK).json(result);
   } catch (error) {
     const err = formatPrismaError(error);
     res.status(err.status).json({ message: err.message });
