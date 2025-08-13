@@ -8,17 +8,17 @@ import {
 } from "../controller/serviceController";
 import { authenticateJWT, authorizeRole } from "../utils/jsonwebtoken";
 import { validatePayload } from "../middleware/validate-payload";
+import upload from "../utils/multer";
 
 const serviceRouter = Router();
-
-
 
 // Create a new service
 serviceRouter.post(
   "/add",
   validatePayload("Service"),
   authenticateJWT,
-  authorizeRole(["SUPER_ADMIN","ADMIN"]),
+  authorizeRole(["SUPER_ADMIN", "ADMIN"]),
+  upload.fields([{ name: "photos", maxCount: 5 }]),
   createServiceHandler,
 );
 
@@ -33,7 +33,8 @@ serviceRouter.put(
   "/update/:id",
   authenticateJWT,
   validatePayload("Service"),
-  authorizeRole(["ADMIN","SUPER_ADMIN"]),
+  authorizeRole(["ADMIN", "SUPER_ADMIN"]),
+  upload.fields([{ name: "photos", maxCount: 5 }]),
   updateServiceHandler,
 );
 
@@ -41,7 +42,7 @@ serviceRouter.put(
 serviceRouter.put(
   "/delete/:id",
   authenticateJWT,
-  authorizeRole(["ADMIN","SUPER_ADMIN"]),
+  authorizeRole(["ADMIN", "SUPER_ADMIN"]),
   deleteServiceHandler,
 );
 

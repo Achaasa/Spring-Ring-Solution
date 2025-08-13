@@ -9,10 +9,31 @@ import {
 import HttpException from "../utils/http-error";
 import { HttpStatus } from "../utils/http-status";
 import { formatPrismaError } from "../utils/formatPrisma";
+import { Service } from "@prisma/client";
+import cloudinary from "../utils/cloudinary";
 
 export const createServiceHandler = async (req: Request, res: Response) => {
+  const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+  const serviceData: Service = req.body;
+  const pictures = [];
+  const uploadedImages = [];
   try {
-    const service = await createService(req.body);
+    if (files.photos && files.photos.length > 0) {
+      for (const photo of files.photos) {
+        const uploaded = await cloudinary.uploader.upload(photo.path, {
+          folder: "/springSolution/service/photos/",
+        });
+
+        if (uploaded) {
+          pictures.push({
+            imageUrl: uploaded.secure_url,
+            imageKey: uploaded.public_id,
+          });
+          uploadedImages.push(uploaded.public_id);
+        }
+      }
+    }
+    const service = await createService(serviceData, pictures);
     res.status(HttpStatus.CREATED).json(service);
   } catch (error) {
     const err = formatPrismaError(error);
@@ -42,9 +63,29 @@ export const getServiceByIdHandler = async (req: Request, res: Response) => {
 };
 
 export const updateServiceHandler = async (req: Request, res: Response) => {
+  const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+  const serviceData: Service = req.body;
+  const pictures = [];
+  const uploadedImages = [];
+  const { id } = req.params;
+
   try {
-    const { id } = req.params;
-    const service = await updateService(id, req.body);
+    if (files.photos && files.photos.length > 0) {
+      for (const photo of files.photos) {
+        const uploaded = await cloudinary.uploader.upload(photo.path, {
+          folder: "springSolution/service/photos/",
+        });
+
+        if (uploaded) {
+          pictures.push({
+            imageUrl: uploaded.secure_url,
+            imageKey: uploaded.public_id,
+          });
+          uploadedImages.push(uploaded.public_id);
+        }
+      }
+    }
+    const service = await updateService(id, serviceData, pictures);
     res.status(HttpStatus.OK).json(service);
   } catch (error) {
     const err = formatPrismaError(error);
