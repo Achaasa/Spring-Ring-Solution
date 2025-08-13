@@ -27,7 +27,7 @@ export const signUpUser = async (
   try {
     if (photo) {
       const uploaded = await cloudinary.uploader.upload(photo, {
-        folder: "user/",
+        folder: "springSolution/user/",
       });
       if (uploaded) {
         picture.imageUrl = uploaded.secure_url;
@@ -109,7 +109,7 @@ export const updateUser = async (
   try {
     if (photo) {
       const uploaded = await cloudinary.uploader.upload(photo, {
-        folder: "user/",
+        folder: "springSolution/user/",
       });
       if (uploaded) {
         picture.imageUrl = uploaded.secure_url;
