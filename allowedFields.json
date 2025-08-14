@@ -90,7 +90,8 @@
       "amount",
       "status",
       "paidAt",
-      "method"
+      "method",
+      "reference"
     ]
   },
   {
@@ -115,6 +116,18 @@
       "message",
       "isRead",
       "type",
+      "createdAt",
+      "updatedAt",
+      "delFlag"
+    ]
+  },
+  {
+    "modelName": "ServiceImages",
+    "fields": [
+      "id",
+      "serviceId",
+      "imageUrl",
+      "imageKey",
       "createdAt",
       "updatedAt",
       "delFlag"
